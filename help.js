@@ -220,9 +220,6 @@ async function logMovies() {
 
 function flush () {
     for (var i=0; i<3; i++) {
-
-        // document.body.appendChild(newDiv);  
-
         localStorage.removeItem(('icon_url_'+i));
         localStorage.removeItem(('icon_title_'+i));
     }
