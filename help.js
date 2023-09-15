@@ -220,10 +220,6 @@ async function logMovies() {
 
 function flush () {
     for (var i=0; i<3; i++) {
-        // const newDiv = document.createElement('img');
-        // newDiv.setAttribute('src', imgs[i].getAttribute('loadlate'));
-        // newDiv.setAttribute('width', '200px');
-        // newDiv.setAttribute('height', '200px');
 
         // document.body.appendChild(newDiv);  
 
