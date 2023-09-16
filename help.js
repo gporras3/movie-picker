@@ -11,7 +11,7 @@ var total = 0;
  * @param {String} url 
  */
 function redirect (url) {
-    location.href=url;
+    location.href = url;
 }
 
 /**
@@ -90,8 +90,8 @@ function createNameBoxes () {
     // remove elems
     if (toRemove > 0) {
         for (var i=0; i<toRemove; i++) {
-            const element = document.getElementById("name" + (numUsersPrev - i - 1));
-            element.remove();
+            const nameBox = document.getElementById("name" + (numUsersPrev - i - 1));
+            nameBox.remove();
         }
     }
 
@@ -120,31 +120,27 @@ function setGroup () {
  * Prints name of the next person to select their movie
  */
 function printName () {
-    ls_set('curr_name', ls_get("name" + ls_get('moviesSelected')));
+    var currName = ls_get("name" + ls_get('moviesSelected'));
     const newDiv = document.createElement('div');
-    const newContent = document.createTextNode(ls_get('curr_name'));
+    const newContent = document.createTextNode(currName);
     newDiv.appendChild(newContent);
     document.body.appendChild(newDiv);
 
-
-    for (var i=0; i<3; i++) {
-        console.log(ls_get(('icon_url_'+i)));
-    }
+    // for (var i=0; i<3; i++) {
+    //     console.log(ls_get(('url'+i)));
+    // }
 }
 
-
-
-/*
-
-*/
+/**
+ * Additional user confirmed their movie choice, move to next user (or vote page)
+ */
 var moviesSelected;
 function nextName () {
-    var tot = ls_get("totalUsers");
+    var tot = ls_get('totalUsers');
 
     // additional member selected, update in ls
     moviesSelected = ls_get('moviesSelected');
-    moviesSelected++;
-    ls_set("moviesSelected", moviesSelected);
+    ls_set('moviesSelected', ++moviesSelected);
 
     // all movies selected, proceed to vote
     if (moviesSelected == tot) {
@@ -156,40 +152,17 @@ function nextName () {
     }
 }
 
-function movies_to_pick () {
-    var tot = ls_get("totalUsers");
-
-    for (var i=0; i<parseInt(tot); i++) {
-        var key = "movie" + i;
-        var movie = ls_get(key);
-
-        const newDiv = document.createElement("div");
-        const newContent = document.createTextNode(movie);
-        newDiv.id = key;
-
-        newDiv.appendChild(newContent);
-        document.body.appendChild(newDiv);
-    }
-}
-
-function createTallies () {
-    
-    // ls_set('nerd', 0);
-    // ls_set('quest', 0);
-    // ls_set('cool', 0);
-    // ls_set('movie'+ls_get('moviesSelected'), document.getElementById('movie').value);
-
-    // redirect('confirm_movie.html');
-
-}
-
-async function logMovies() {
+/**
+ * Takes user input and searches imdb for movies/shows matching query.
+ * Retrieves html of search page and extracts title and image sources 
+ * of top 3 hits
+ */
+async function logMovieData() {
     var searchQuery = document.getElementById('movie').value;
-    console.log(searchQuery);
+    searchQuery = searchQuery.replace(/\s+/g, "-");
 
-    searchQuery = searchQuery.replace(/\s+/g, '-');
-    var url =  'https://www.imdb.com/search/title/?title=' + searchQuery;
-    var proxy_url = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    var url = "https://www.imdb.com/search/title/?title=" + searchQuery;
+    var proxy_url = "https://corsproxy.io/?" + encodeURIComponent(url);     // credit to corsproxy.io for handling cors error
 
     var response = await fetch(proxy_url);
     var imdb_html = await response.text();
@@ -199,44 +172,33 @@ async function logMovies() {
     var imgs = doc.querySelectorAll('.loadlate');
 
     for (var i=0; i<3; i++) {
-        console.log(imgs[i].getAttribute('alt'))
-        console.log(imgs[i].getAttribute('loadlate'));
-    }
-
-    for (var i=0; i<3; i++) {
-        // const newDiv = document.createElement('img');
-        // newDiv.setAttribute('src', imgs[i].getAttribute('loadlate'));
-        // newDiv.setAttribute('width', '200px');
-        // newDiv.setAttribute('height', '200px');
-
-        // document.body.appendChild(newDiv);  
-
-        ls_set(('icon_url_'+i), imgs[i].getAttribute('loadlate'));
-        ls_set(('icon_title_'+i), imgs[i].getAttribute('alt'));
+        ls_set(("url" + i), imgs[i].getAttribute('loadlate'));
+        ls_set(("title" + i), imgs[i].getAttribute('alt'));
     }
 
     redirect('confirm_movie.html');
 }
 
-function flush () {
-    for (var i=0; i<3; i++) {
-        localStorage.removeItem(('icon_url_'+i));
-        localStorage.removeItem(('icon_title_'+i));
-    }
-}
+/**
+ * Clears ls of movie data previously collected. Needed when user
+ * wants to select a new movie
+ */
+// function clearMovieData () {
+//     for (var i=0; i<3; i++) {
+//         localStorage.removeItem(('url' + i));
+//         localStorage.removeItem(('title' + i));
+//     }
+// }
 
 function showOptions() {
     for (var i=0; i<3; i++) {
-        var url = ls_get(('icon_url_'+i));
-        var title = ls_get(('icon_title_'+i));
+        var url = ls_get(('url'+i));
+        var title = ls_get(('title'+i));
         console.log(url);
 
         const newButton = document.createElement('button');
         newButton.setAttribute('type', 'button');
-        // var functMovie = 'setMovieData(' + i + ');';
-        // newButton.setAttribute('onclick', ('setBorder(this); ' + functMovie));
         newButton.setAttribute('onclick', 'setBorder(this); setMovieData(this);');
-        // newButton.id = 'button' + i;
         newButton.id = title;
 
         const newDiv = document.createElement('img');
@@ -256,6 +218,7 @@ function setMovieData (el) {
     
     ls_set((index+'movie'), el.id);
     ls_set((index+'image'), el.firstChild.src);
+    ls_set(el.id, 0);
 
     console.log(el.id);
     console.log(el.firstChild.src);
@@ -263,7 +226,7 @@ function setMovieData (el) {
 
 function removeOtherBorders () {
     for (var i=0; i<3; i++) {
-        var title = ls_get(('icon_title_'+i));
+        var title = ls_get(('title'+i));
         document.getElementById(title).removeAttribute('style');
     }
 }

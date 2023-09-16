@@ -51,30 +51,6 @@ function recordChoices () {
     }
 }
 
-/**
- * 
- */
-function printChoices () {
-    var tot = ls_get('totalUsers');
-    // var tally0, tally1, tally2;
-    
-    for (var i=0; i<tot; i++) {
-        var currName = ls_get("name"+i);
-        for (var j=0; j<tot; j++) {
-
-            // ls_set()
-
-            console.log(ls_get("choice"+j+currName));
-            console.log("choice"+j+currName);
-            // console.log(ls_get())
-            // (tally + )
-        }
-    }
-    console.log("cool"+ls_get('cool'));
-    console.log("nerd"+ls_get('nerd'));
-    console.log("quest"+ls_get('quest'));
-}
-
 /** 
  * Creates frames for movie thumbnails, sets attr. so that icons are draggable
  * order of icons determines user's votes
@@ -280,4 +256,22 @@ function ls_get (key) {
 
 function ls_set (key, value) {
     localStorage.setItem(key, value);
+}
+
+function declareWinner () {
+    var high = 1000000;
+    var winner;
+
+    for (var i=0; i<3; i++) {
+        var currTitle = ls_get((i+'movie'));
+        console.log(currTitle);
+
+        if (ls_get(currTitle) < high) {
+            console.log("score"+ls_get(currTitle));
+            winner = currTitle;
+            high = ls_get(currTitle);
+        }
+    }
+
+    console.log("Winner is: " + winner);
 }
