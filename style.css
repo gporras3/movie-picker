@@ -68,13 +68,12 @@
     --f-color: #cd0d1e;
 }
 
-.part {
-    background-color: #ddf;
-    padding: 30px;
-    margin: 10px;  
+.popout {
+    margin: 1px;  
     border: 1px solid #333;
     transition: 0.15s;
-  }
-  .part:hover {
+}
+
+.popout:hover {
     transform: scale(1.07);
-  }
+}

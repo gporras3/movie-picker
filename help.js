@@ -79,7 +79,7 @@ function createNameBoxes () {
     }
 
     // add elems
-    for (var i=0; i<toAdd; i++) {
+    for (let i=0; i<toAdd; i++) {
         const newInput = document.createElement('input');
         newInput.id = "name" + (numUsersPrev + i);
   
@@ -89,8 +89,8 @@ function createNameBoxes () {
 
     // remove elems
     if (toRemove > 0) {
-        for (var i=0; i<toRemove; i++) {
-            const nameBox = document.getElementById("name" + (numUsersPrev - i - 1));
+        for (let i=0; i<toRemove; i++) {
+            const nameBox = document.getElementById('name' + (numUsersPrev - i - 1));
             nameBox.remove();
         }
     }
@@ -105,7 +105,7 @@ function createNameBoxes () {
 function setGroup () {
     var tot = ls_get('totalUsers');
 
-    for (var i=0; i<tot; i++) {
+    for (let i=0; i<tot; i++) {
         var key = "name" + i;
         ls_set(key, document.getElementById(key).value);
     }
@@ -120,15 +120,11 @@ function setGroup () {
  * Prints name of the next person to select their movie
  */
 function printName () {
-    var currName = ls_get("name" + ls_get('moviesSelected'));
+    var currName = ls_get('name' + ls_get('moviesSelected'));
     const newDiv = document.createElement('div');
     const newContent = document.createTextNode(currName);
     newDiv.appendChild(newContent);
     document.body.appendChild(newDiv);
-
-    // for (var i=0; i<3; i++) {
-    //     console.log(ls_get(('url'+i)));
-    // }
 }
 
 /**
@@ -159,7 +155,7 @@ function nextName () {
  */
 async function logMovieData() {
     var searchQuery = document.getElementById('movie').value;
-    searchQuery = searchQuery.replace(/\s+/g, "-");
+    searchQuery = searchQuery.replace(/\s+/g, '-');
 
     var url = "https://www.imdb.com/search/title/?title=" + searchQuery;
     var proxy_url = "https://corsproxy.io/?" + encodeURIComponent(url);     // credit to corsproxy.io for handling cors error
@@ -171,66 +167,73 @@ async function logMovieData() {
 	const doc = parser.parseFromString(imdb_html, 'text/html');
     var imgs = doc.querySelectorAll('.loadlate');
 
-    for (var i=0; i<3; i++) {
-        ls_set(("url" + i), imgs[i].getAttribute('loadlate'));
-        ls_set(("title" + i), imgs[i].getAttribute('alt'));
+    for (let i=0; i<3; i++) {
+        ls_set(('url' + i), imgs[i].getAttribute('loadlate'));
+        ls_set(('title' + i), imgs[i].getAttribute('alt'));
     }
 
     redirect('confirm_movie.html');
 }
 
 /**
- * Clears ls of movie data previously collected. Needed when user
- * wants to select a new movie
+ * Makes 3 boxes with the top 3 imdb hits matching search query.
+ * Clicking the box will change the movie data (title, image) 
+ * associated with the current user
  */
-// function clearMovieData () {
-//     for (var i=0; i<3; i++) {
-//         localStorage.removeItem(('url' + i));
-//         localStorage.removeItem(('title' + i));
-//     }
-// }
-
-function showOptions() {
-    for (var i=0; i<3; i++) {
-        var url = ls_get(('url'+i));
-        var title = ls_get(('title'+i));
-        console.log(url);
+function displaySearchHits() {
+    for (let i=0; i<3; i++) {
+        var url = ls_get(('url' + i));
+        var title = ls_get(('title' + i));
 
         const newButton = document.createElement('button');
         newButton.setAttribute('type', 'button');
         newButton.setAttribute('onclick', 'setBorder(this); setMovieData(this);');
         newButton.id = title;
 
-        const newDiv = document.createElement('img');
-        newDiv.setAttribute('src', url);
-        newDiv.setAttribute('width', '200px');
-        newDiv.setAttribute('height', '200px');
-        newDiv.className = 'part';
+        const newImg = document.createElement('img');
+        newImg.setAttribute('src', url);
+        newImg.setAttribute('width', '200px');
+        newImg.setAttribute('height', '200px');
+        newImg.className = "popout";
 
-        newButton.appendChild(newDiv);
+        newButton.appendChild(newImg);
         document.body.appendChild(newButton);
     }
-   
 }
 
+/**
+ * Changes the movie data (title, image) associated with user
+ * based on their selection. Also initializes a tally for that 
+ * movie
+ * @param {ThisParameterType} el 
+ */
 function setMovieData (el) {
     var index = ls_get('moviesSelected');
     
-    ls_set((index+'movie'), el.id);
-    ls_set((index+'image'), el.firstChild.src);
-    ls_set(el.id, 0);
+    ls_set((index + 'movie'), el.id);               // title
+    ls_set((index + 'image'), el.firstChild.src);   // image url
+    ls_set(el.id, 0);                               // tally
 
     console.log(el.id);
     console.log(el.firstChild.src);
 }
 
-function removeOtherBorders () {
-    for (var i=0; i<3; i++) {
-        var title = ls_get(('title'+i));
-        document.getElementById(title).removeAttribute('style');
-    }
-}
+/**
+ * Used to highlight the image of the movie chosen
+ * @param {ThisParameterType} el 
+ */
 function setBorder (el) {
     removeOtherBorders();
     el.style.border = '3px solid green';
+}
+
+/**
+ * Removes all other borders of images displayed, highlighting
+ * the movie the user has chosen
+ */
+function removeOtherBorders () {
+    for (let i=0; i<3; i++) {
+        var title = ls_get(('title' + i));
+        document.getElementById(title).removeAttribute('style');
+    }
 }
