@@ -10,9 +10,7 @@
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
 
-    <body class="body">
-        <a id="link" href="https://www.mlb.com" target="_blank" >gmail</a>
-
+    <body class="body" onload="localStorage.clear();">
         <div class="box">
             <button type="button" class="circle-button" onclick="decreaseUsers();"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAQElEQVR4nO3RQQoAEAAF0Tke7r+m5B6sbGVBKfPqr2fxQZKkTQkoQD+8AsRVuF6IzrUnwxHIF6IZCLt/S5I+NwDHN1vXMmzw6wAAAABJRU5ErkJggg=="></button>
             <input type="text" placeholder="Group Size" id="numUsers" oninput="createNameBoxes();">

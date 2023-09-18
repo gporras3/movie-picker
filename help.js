@@ -210,9 +210,17 @@ function displaySearchHits() {
 function setMovieData (el) {
     var index = ls_get('moviesSelected');
     
-    ls_set((index + 'movie'), el.id);               // title
-    ls_set((index + 'image'), el.firstChild.src);   // image url
-    ls_set(el.id, 0);                               // tally
+    // non-duplicate, user can select
+    if (!ls_get(el.id)) {
+        ls_set(('movie' + index), el.id);               // title
+        ls_set(('image' + index), el.firstChild.src);   // image url
+        ls_set(el.id, 0);                               // tally
+        document.getElementById('confirm').removeAttribute('disabled');
+    }
+    // duplicate choice, user must pick something else
+    else {
+        document.getElementById('confirm').setAttribute('disabled', 'true');
+    }
 
     console.log(el.id);
     console.log(el.firstChild.src);
