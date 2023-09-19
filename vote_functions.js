@@ -247,19 +247,19 @@ function redirect(url) {
 function ls_get (key) {
     var currGroup = localStorage.getItem('groupId');
 
-    return localStorage.getItem(currGroup + key);
+    return localStorage.getItem(currGroup + '_' + key);
 }
 
 function ls_set (key, value) {
     var currGroup = localStorage.getItem('groupId');
 
-    localStorage.setItem(currGroup + key, value);
+    localStorage.setItem(currGroup + '_' + key, value);
 }
 
 function ls_rem (key) {
     var currGroup = localStorage.getItem('groupId');
 
-    localStorage.removeItem(currGroup + key);
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 function declareWinner () {
@@ -286,4 +286,6 @@ function declareWinner () {
     ls_set('day', day);
     ls_set('moviesSelected', 0);
     ls_set('votesCasted', 0);
+
+    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
 }

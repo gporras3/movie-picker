@@ -24,7 +24,7 @@ function redirect (url) {
  */
 function ls_get (key) {
     var currGroup = localStorage.getItem('groupId');
-    return localStorage.getItem(currGroup + key);
+    return localStorage.getItem(currGroup + '_' + key);
 }
 
 /**
@@ -34,12 +34,12 @@ function ls_get (key) {
  */
 function ls_set (key, value) {
     var currGroup = localStorage.getItem('groupId');
-    localStorage.setItem(currGroup + key, value);
+    localStorage.setItem(currGroup + '_' + key, value);
 }
 
 function ls_rem (key) {
     var currGroup = localStorage.getItem('groupId');
-    localStorage.removeItem(currGroup + key);
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 //////////////////////////////
@@ -296,6 +296,7 @@ function newGroup () {
     }
 
     ls_set('day', 0);
+    // ls_set('allowedToPick', )
     // totalGroups++;
     // ls_set('allowedToPick', );
 }
@@ -314,7 +315,7 @@ function displayGroupList () {
 
 
         newButton.setAttribute('type', 'button');
-        newButton.setAttribute('onclick', 'changeCurrId(this); redirect("name_and_movie.html");');
+        newButton.setAttribute('onclick', 'changeCurrId(this); prevGroup(); redirect("name_and_movie.html");');
         newButton.id = i;
 
         const newContent = document.createTextNode(groupName);
