@@ -1,6 +1,9 @@
 var numUsersPrev = 0;
 var totalUsers = 0;
-var total = 0;
+// var total = 0;
+var totalGroups = -1;
+// localStorage.setItem('groupId', 0);
+// var currGroup = 0;
 
 //////////////////////
 // HELPER FUNCTIONS //
@@ -20,7 +23,8 @@ function redirect (url) {
  * @returns value
  */
 function ls_get (key) {
-    return localStorage.getItem(key);
+    var currGroup = localStorage.getItem('groupId');
+    return localStorage.getItem(currGroup + key);
 }
 
 /**
@@ -29,7 +33,13 @@ function ls_get (key) {
  * @param {*} value 
  */
 function ls_set (key, value) {
-    localStorage.setItem(key, value);
+    var currGroup = localStorage.getItem('groupId');
+    localStorage.setItem(currGroup + key, value);
+}
+
+function ls_rem (key) {
+    var currGroup = localStorage.getItem('groupId');
+    localStorage.removeItem(currGroup + key);
 }
 
 //////////////////////////////
@@ -103,6 +113,11 @@ function createNameBoxes () {
  * Establishes group and saves all names
  */
 function setGroup () {
+    var groupNum = localStorage.getItem('totalGroups');
+    localStorage.setItem(groupNum + 'groupName', document.getElementById('groupName').value);      // prepend id 
+
+    ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+    console.log(ls_get('allowedToPick'));
     var tot = ls_get('totalUsers');
 
     for (let i=0; i<tot; i++) {
@@ -132,7 +147,15 @@ function printName () {
  */
 var moviesSelected;
 function nextName () {
-    var tot = ls_get('totalUsers');
+    ls_set(ls_get('tempTally'), 0);                               // tally
+
+    // var tot = ls_get('totalUsers');
+    var tot = ls_get('allowedToPick');
+
+    for (let i=0; i<tot; i++) {
+        ls_rem('url' + i);
+        ls_rem('title' + i);
+    }
 
     // additional member selected, update in ls
     moviesSelected = ls_get('moviesSelected');
@@ -214,7 +237,7 @@ function setMovieData (el) {
     if (!ls_get(el.id)) {
         ls_set(('movie' + index), el.id);               // title
         ls_set(('image' + index), el.firstChild.src);   // image url
-        ls_set(el.id, 0);                               // tally
+        ls_set('tempTally', el.id);                     // tally
         document.getElementById('confirm').removeAttribute('disabled');
     }
     // duplicate choice, user must pick something else
@@ -245,3 +268,80 @@ function removeOtherBorders () {
         document.getElementById(title).removeAttribute('style');
     }
 }
+
+function resetStorage () {
+    localStorage.clear();
+}
+
+
+function newGroup () {
+    // localStorage.clear();
+    console.log("cleared");
+    // ++totalGroups;
+    
+    // console.log(newTot);
+
+    if (localStorage.getItem('totalGroups')) {
+        var prev = localStorage.getItem('totalGroups');
+        var newTot = parseInt(prev) + 1;
+
+        localStorage.setItem('groupId', newTot);
+        localStorage.setItem('totalGroups', newTot);
+
+    }
+
+    else {
+        localStorage.setItem('groupId', 0);
+        localStorage.setItem('totalGroups', 0);
+    }
+
+    ls_set('day', 0);
+    // totalGroups++;
+    // ls_set('allowedToPick', );
+}
+
+// issue is total groups isnt changing. likely need to increment within local Storage
+
+function displayGroupList () {
+    var totGroups = parseInt(localStorage.getItem('totalGroups')) + 1;     // indexed at 0
+    console.log(totGroups);
+
+    for (let i=0; i<totGroups; i++) {
+        var groupName = localStorage.getItem(i + 'groupName');  // can't use ls_get here because don't want index 
+
+        const newDiv = document.createElement('div');
+        const newButton = document.createElement('button');
+
+
+        newButton.setAttribute('type', 'button');
+        newButton.setAttribute('onclick', 'changeCurrId(this); redirect("name_and_movie.html");');
+        newButton.id = i;
+
+        const newContent = document.createTextNode(groupName);
+        newButton.appendChild(newContent);
+
+        newDiv.appendChild(newButton);
+        document.body.appendChild(newDiv);
+    }
+}
+
+function changeCurrId (el) {
+    localStorage.setItem('groupId', el.id);
+    // console.log(el.id);
+}
+
+function prevGroup () {
+    // var totalUsers = 
+    // for
+
+
+
+    ls_set('allowedToPick', parseInt(ls_get('totalUsers')) - parseInt(ls_get('day')));
+    console.log("allowed: " + ls_get('allowedToPick'));
+    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+    // console.l
+}
+
+// function allowedToPick () {
+//     ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+// }
