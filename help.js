@@ -1,6 +1,9 @@
 var numUsersPrev = 0;
 var totalUsers = 0;
-var total = 0;
+// var total = 0;
+var totalGroups = -1;
+// localStorage.setItem('groupId', 0);
+// var currGroup = 0;
 
 //////////////////////
 // HELPER FUNCTIONS //
@@ -20,7 +23,8 @@ function redirect (url) {
  * @returns value
  */
 function ls_get (key) {
-    return localStorage.getItem(key);
+    var currGroup = localStorage.getItem('groupId');
+    return localStorage.getItem(currGroup + '_' + key);
 }
 
 /**
@@ -29,7 +33,13 @@ function ls_get (key) {
  * @param {*} value 
  */
 function ls_set (key, value) {
-    localStorage.setItem(key, value);
+    var currGroup = localStorage.getItem('groupId');
+    localStorage.setItem(currGroup + '_' + key, value);
+}
+
+function ls_rem (key) {
+    var currGroup = localStorage.getItem('groupId');
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 //////////////////////////////
@@ -82,9 +92,11 @@ function createNameBoxes () {
     for (let i=0; i<toAdd; i++) {
         const newInput = document.createElement('input');
         newInput.id = "name" + (numUsersPrev + i);
+        newInput.style = "height: 25px; background-color:var(--o-color);";
   
-        const currentDiv = document.getElementById('flex');
-        document.body.insertBefore(newInput, currentDiv);
+        // const currentDiv = document.getElementById('flex');
+        // document.body.insertBefore(newInput, currentDiv);
+        document.getElementById('nameBoxes').appendChild(newInput);
     }
 
     // remove elems
@@ -95,7 +107,6 @@ function createNameBoxes () {
         }
     }
 
-    ls_set('totalUsers', totalUsers);
     numUsersPrev = numUsers;
 }
 
@@ -103,6 +114,14 @@ function createNameBoxes () {
  * Establishes group and saves all names
  */
 function setGroup () {
+    newGroup();
+    ls_set('totalUsers', totalUsers);
+
+    var groupNum = localStorage.getItem('totalGroups');
+    localStorage.setItem(groupNum + 'groupName', document.getElementById('groupName').value);      // prepend id 
+
+    ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+    console.log(ls_get('allowedToPick'));
     var tot = ls_get('totalUsers');
 
     for (let i=0; i<tot; i++) {
@@ -132,7 +151,15 @@ function printName () {
  */
 var moviesSelected;
 function nextName () {
-    var tot = ls_get('totalUsers');
+    ls_set(ls_get('tempTally'), 0);                               // tally
+
+    // var tot = ls_get('totalUsers');
+    var tot = ls_get('allowedToPick');
+
+    for (let i=0; i<tot; i++) {
+        ls_rem('url' + i);
+        ls_rem('title' + i);
+    }
 
     // additional member selected, update in ls
     moviesSelected = ls_get('moviesSelected');
@@ -166,10 +193,17 @@ async function logMovieData() {
     const parser = new DOMParser();
 	const doc = parser.parseFromString(imdb_html, 'text/html');
     var imgs = doc.querySelectorAll('.loadlate');
+    console.log(imgs);
 
     for (let i=0; i<3; i++) {
-        ls_set(('url' + i), imgs[i].getAttribute('loadlate'));
-        ls_set(('title' + i), imgs[i].getAttribute('alt'));
+        if(imgs.length != 0) {
+            ls_set(('url' + i), imgs[i].getAttribute('loadlate'));
+            ls_set(('title' + i), imgs[i].getAttribute('alt'));    
+        }
+        else {
+            console.log("retype");
+            return;
+        }
     }
 
     redirect('confirm_movie.html');
@@ -192,12 +226,12 @@ function displaySearchHits() {
 
         const newImg = document.createElement('img');
         newImg.setAttribute('src', url);
-        newImg.setAttribute('width', '200px');
+        newImg.setAttribute('width', '133px');
         newImg.setAttribute('height', '200px');
         newImg.className = "popout";
 
         newButton.appendChild(newImg);
-        document.body.appendChild(newButton);
+        document.getElementById('frames').appendChild(newButton);
     }
 }
 
@@ -209,10 +243,23 @@ function displaySearchHits() {
  */
 function setMovieData (el) {
     var index = ls_get('moviesSelected');
+    var confirmButton = document.getElementById('confirm');
     
-    ls_set((index + 'movie'), el.id);               // title
-    ls_set((index + 'image'), el.firstChild.src);   // image url
-    ls_set(el.id, 0);                               // tally
+    // non-duplicate, user can select
+    if (!ls_get(el.id)) {
+        ls_set(('movie' + index), el.id);               // title
+        ls_set(('image' + index), el.firstChild.src);   // image url
+        ls_set('tempTally', el.id);                     // tally
+        confirmButton.removeAttribute('disabled');
+        confirmButton.className = "user-button";
+        // confirmButton.style = "background-color: var(--f-color);"
+    }
+    // duplicate choice, user must pick something else
+    else {
+        confirmButton.setAttribute('disabled', 'true');
+        confirmButton.className = "user-button-gray";
+        // confirmButton.style = "background-color: #5a5a5a;";
+    }
 
     console.log(el.id);
     console.log(el.firstChild.src);
@@ -237,3 +284,83 @@ function removeOtherBorders () {
         document.getElementById(title).removeAttribute('style');
     }
 }
+
+function resetStorage () {
+    localStorage.clear();
+}
+
+
+function newGroup () {
+    // localStorage.clear();
+    console.log("cleared");
+    // ++totalGroups;
+    
+    // console.log(newTot);
+
+    if (localStorage.getItem('totalGroups')) {
+        var prev = localStorage.getItem('totalGroups');
+        var newTot = parseInt(prev) + 1;
+
+        localStorage.setItem('groupId', newTot);
+        localStorage.setItem('totalGroups', newTot);
+
+    }
+
+    else {
+        localStorage.setItem('groupId', 0);
+        localStorage.setItem('totalGroups', 0);
+    }
+
+    ls_set('day', 0);
+    // ls_set('allowedToPick', )
+    // totalGroups++;
+    // ls_set('allowedToPick', );
+}
+
+// issue is total groups isnt changing. likely need to increment within local Storage
+
+function displayGroupList () {
+    var totGroups = parseInt(localStorage.getItem('totalGroups')) + 1;     // indexed at 0
+    console.log(totGroups);
+
+    for (let i=0; i<totGroups; i++) {
+        var groupName = localStorage.getItem(i + 'groupName');  // can't use ls_get here because don't want index 
+
+        const newDiv = document.createElement('div');
+        const newButton = document.createElement('button');
+
+
+        newButton.setAttribute('type', 'button');
+        newButton.setAttribute('onclick', 'changeCurrId(this); prevGroup(); redirect("name_and_movie.html");');
+        newButton.id = i;
+
+        const newContent = document.createTextNode(groupName);
+        newButton.appendChild(newContent);
+
+        newDiv.appendChild(newButton);
+        document.body.appendChild(newDiv);
+    }
+}
+
+function changeCurrId (el) {
+    localStorage.setItem('groupId', el.id);
+    // console.log(el.id);
+}
+
+// issue: creating new group without actually forming it adds it to the existing group list 
+
+function prevGroup () {
+    // var totalUsers = 
+    // for
+
+
+
+    ls_set('allowedToPick', parseInt(ls_get('totalUsers')) - parseInt(ls_get('day')));
+    console.log("allowed: " + ls_get('allowedToPick'));
+    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+    // console.l
+}
+
+// function allowedToPick () {
+//     ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+// }

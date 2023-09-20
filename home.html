@@ -4,17 +4,26 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>chicken</title>
+        <title>FlixPix - Home</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
     
     <body class="body">
-        <div class="box" id="flex">
-            <button type="button" class="user-button" onclick="redirect('groups.html')">New User</button>
-        	<button class="user-button">Existing User</button>
+        <div class="box_vert" >
+            <span class="text_main">Welcome to [website name].</span>
+            <span class="text_detail">Use a ranked voting system to decide what to watch for movie night.</span>
+        
         </div>
+
+        <div class="box" id="flex">
+            <!-- <button type="button" class="user-button" onclick="newGroup(); redirect('new_group.html')">New Group</button> -->
+            <button type="button" class="user-button" onclick="redirect('new_group.html')">New Group</button>
+        	<button class="user-button" onclick="redirect('group_list.html')">Existing Group</button>
+        </div>
+
+        <button type="button" onclick="resetStorage();">reset</button>
         <script src="help.js"></script>
 
     </body>

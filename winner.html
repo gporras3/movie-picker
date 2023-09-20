@@ -13,11 +13,13 @@
 
     </head>
 
-    <body class="body" onload="declareWinner();">
+    <body class="body" onload="declareWinner(); summary();">
     
         <div>winner winner chicken dinner</div>
         <input type="text" id="input">
         <div id="output"></div>
+        <button type="button" onclick="redirect('home.html')">home</button>
+
 
         <script src="vote_functions.js"></script>
     </body>

@@ -39,13 +39,37 @@ function nextVoter() {
  * Records user's rankings of movies, adds to the tallies (lowest wins)
  */
 function recordChoices () {
-    var tot = ls_get('totalUsers');
+    var tot = ls_get('allowedToPick');
+    var user = ls_get('votesCasted');
 
     for (let i=0; i<tot; i++) {
         var title = document.getElementById('pick' + i).getAttribute('movie-title');
 
+        var rank = "rank" + user + i;
+        ls_set(rank, title);
         ls_set(title, (parseInt(ls_get(title)) + i));
     }
+}
+
+function summary () {
+    var tot = ls_get('allowedToPick');
+    var numUsers = ls_get('totalUsers');
+
+    for (let user=0; user<numUsers; user++) {
+        for (let pick=0; pick<tot; pick++) {
+            console.log(ls_get('rank' + user + pick));
+        }
+    }
+}
+
+function storeEndData () {
+    // names
+
+    // group size
+
+    // day number 
+
+    // winner data (title, icon url)
 }
 
 /** 
@@ -53,7 +77,7 @@ function recordChoices () {
  * Order of icons determines user's votes
  */
 function makeMovieFrames() {
-    var tot = ls_get("totalUsers");
+    var tot = ls_get('allowedToPick');
 
     for (let i=0; i<tot; i++) {
         const frame = document.createElement('div');
@@ -63,8 +87,8 @@ function makeMovieFrames() {
         frame.setAttribute('icon-present', 'true');
 
         icon.id = 'pick' + i;
-        icon.setAttribute('src', ls_get(i+'image'));
-        icon.setAttribute('movie-title', ls_get(i+'movie'));
+        icon.setAttribute('src', ls_get('image' + i));
+        icon.setAttribute('movie-title', ls_get('movie' + i));
         
         icon.setAttribute('draggable', 'true');
         icon.setAttribute('ondragstart', 'drag(event)');
@@ -147,7 +171,7 @@ function pushRight(startId) {
     const frame = icon.parentElement;
 
     // base case #1, pushed as far right as possible 
-    if (startId > ls_get("totalUsers")) {
+    if (startId > ls_get('allowedToPick')) {
         return;
     }
 
@@ -221,11 +245,21 @@ function redirect(url) {
 
 // getter, setter functions for local storage, just to make code cleaner
 function ls_get (key) {
-    return localStorage.getItem(key);
+    var currGroup = localStorage.getItem('groupId');
+
+    return localStorage.getItem(currGroup + '_' + key);
 }
 
 function ls_set (key, value) {
-    localStorage.setItem(key, value);
+    var currGroup = localStorage.getItem('groupId');
+
+    localStorage.setItem(currGroup + '_' + key, value);
+}
+
+function ls_rem (key) {
+    var currGroup = localStorage.getItem('groupId');
+
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 function declareWinner () {
@@ -233,7 +267,7 @@ function declareWinner () {
     var winner;
 
     for (let i=0; i<3; i++) {
-        var currTitle = ls_get((i+'movie'));
+        var currTitle = ls_get(('movie' + i));
         console.log(currTitle);
 
         if (ls_get(currTitle) < high) {
@@ -241,7 +275,17 @@ function declareWinner () {
             winner = currTitle;
             high = ls_get(currTitle);
         }
+
+        ls_rem(currTitle);
     }
 
     console.log("Winner is: " + winner);
+
+    var day =  ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
+    console.log(day);
+    ls_set('day', day);
+    ls_set('moviesSelected', 0);
+    ls_set('votesCasted', 0);
+
+    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
 }
