@@ -39,7 +39,7 @@ function nextVoter() {
  * Records user's rankings of movies, adds to the tallies (lowest wins)
  */
 function recordChoices () {
-    var tot = ls_get('totalUsers');
+    var tot = ls_get('allowedToPick');
     var user = ls_get('votesCasted');
 
     for (let i=0; i<tot; i++) {
@@ -52,9 +52,10 @@ function recordChoices () {
 }
 
 function summary () {
-    var tot = ls_get('totalUsers');
+    var tot = ls_get('allowedToPick');
+    var numUsers = ls_get('totalUsers');
 
-    for (let user=0; user<tot; user++) {
+    for (let user=0; user<numUsers; user++) {
         for (let pick=0; pick<tot; pick++) {
             console.log(ls_get('rank' + user + pick));
         }
@@ -76,7 +77,7 @@ function storeEndData () {
  * Order of icons determines user's votes
  */
 function makeMovieFrames() {
-    var tot = ls_get("totalUsers");
+    var tot = ls_get('allowedToPick');
 
     for (let i=0; i<tot; i++) {
         const frame = document.createElement('div');
@@ -170,7 +171,7 @@ function pushRight(startId) {
     const frame = icon.parentElement;
 
     // base case #1, pushed as far right as possible 
-    if (startId > ls_get("totalUsers")) {
+    if (startId > ls_get('allowedToPick')) {
         return;
     }
 
@@ -244,11 +245,21 @@ function redirect(url) {
 
 // getter, setter functions for local storage, just to make code cleaner
 function ls_get (key) {
-    return localStorage.getItem(key);
+    var currGroup = localStorage.getItem('groupId');
+
+    return localStorage.getItem(currGroup + '_' + key);
 }
 
 function ls_set (key, value) {
-    localStorage.setItem(key, value);
+    var currGroup = localStorage.getItem('groupId');
+
+    localStorage.setItem(currGroup + '_' + key, value);
+}
+
+function ls_rem (key) {
+    var currGroup = localStorage.getItem('groupId');
+
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 function declareWinner () {
@@ -264,7 +275,17 @@ function declareWinner () {
             winner = currTitle;
             high = ls_get(currTitle);
         }
+
+        ls_rem(currTitle);
     }
 
     console.log("Winner is: " + winner);
+
+    var day =  ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
+    console.log(day);
+    ls_set('day', day);
+    ls_set('moviesSelected', 0);
+    ls_set('votesCasted', 0);
+
+    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
 }

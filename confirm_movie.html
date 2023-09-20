@@ -4,17 +4,21 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>fish</title>
+        <title>FlixPix - Select a Movie</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
 
     <body class="body" onload="displaySearchHits();">
-    
-        <!-- <button type="button" onclick="clearMovieData(); redirect('name_and_movie.html');">back</button> -->
-        <button type="button" onclick="redirect('name_and_movie.html');">back</button>
-        <button id="confirm" type="button" onclick="nextName();">confirm</button>
+        <div class="gen_box" style="position: absolute; flex-direction: column; width: 600px;">
+            <div class="gen_box" id="frames"></div>
+
+            <div class="gen_box">
+                <button type="button" id="back" class="user-button" onclick="redirect('name_and_movie.html');">Back</button>
+                <button type="button" id="confirm" class="user-button" onclick="nextName();">Confirm</button>    
+            </div>
+        </div>
 
         <script src="help.js"></script>
     </body>
