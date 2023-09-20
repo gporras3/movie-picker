@@ -8,32 +8,88 @@
 
 .frame {
     height: 200px;
-    width: 200px;
+    width: 133px;
     /* border-radius: 25px; */
     border: 2px solid #282828;
     /* padding: 20px; */
 }
+.gen_box {
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    transform-box: fill-box;
+    margin: 0;
+}
 
 .box {
     display: flex;
-    width: 800px;
+    width: 400px;
     position: relative;
-    left:50%;
-    transform: translate(-50%, 300%);
+    /* left:50%; */
+    /* transform: translate(-50%, 300%); */
+    top: 33vh;
+    left: 22vw;
+    transform: translate(-50%, -50%);
 
     justify-content: space-between;
     /* align-items: center; */
-    background-color: dodgerblue;
+    /* background-color: dodgerblue; */
+    /* vertical-align: middle; */
+}
+
+.box_vert {
+    display: flex;
+    width: 800px;
+    height: 250px;
+    /* position: relative; */
+    position: relative;
+    transform-box: fill-box;
+    /* transform-box: content-box; */
+
+    /* left:50%; */
+    /* transform: translate(50vw, 50vh); */
+    top: 33vh;
+    left: 33vw;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+
+    justify-content: space-evenly;
+    /* align-items: center; */
+    /* background-color: dodgerblue; */
     /* vertical-align: middle; */
 }
 
 .user-button {
-    background-color: var(--t-color);
-    height: 80px;
-    width: 250px;
-    color: var(--s-color);
-    border:none;
-    border-radius:15px;     
+    background-color: var(--f-color);
+    height: 60px;
+    width: 175px;
+    color: var(--o-color);
+    font-size: 25px;
+    font-weight: bold;
+    /* font-family: 'Gill Sans', Verdana, Geneva, Tahoma, sans-serif; */
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    /* font-family:  Verdana, Geneva, Tahoma, sans-serif; */
+
+    /* font-variant: small-caps; */
+    border: none;
+    border-radius: 5px;     
+}
+
+.user-button:hover {
+    background-color: var(--o-color);
+    color: var(--f-color);
+}
+
+.user-button-gray {
+    background-color: #5a5a5a;
+    height: 60px;
+    width: 175px;
+    color: var(--o-color);
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    border: none;
+    border-radius: 5px;   
 }
 
 .circle-button {
@@ -43,29 +99,37 @@
     border: solid #cd0d1e;
 }
 
+.text_main {
+    color: var(--t-color);
+    font-size: 75px;
+    font-weight: bold;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
+.text_detail {
+    color: var(--t-color);
+    font-size: 40px;
+    /* font-weight: bold; */
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
 
 .body {
     min-height: 100vh;
-    background-color: var(--o-color);
+    background-color: var(--s-color);
     margin:0%;
+    /* transform-box: content-box; */
+    /* transform-box: fill-box; */
+
 }
 
 :root {
-    /* --background-color: #d1cbc8;
-    --secondary-color: #513323;
-    --third-color: #c10c07;
-    --fourth-color: #eb5b2b;
-
-    --background-color: #4d5558;
-    --secondary-color: #fdc93b;
-    --third-color: #fffef9;
-    --fourth-color: #bfbaba; */
-
-    /* --o-color: #fdfefe; */
-    --o-color: #f5f0e1;
-    --s-color: #9acfea;
-    --t-color: #12141f;
-    --f-color: #cd0d1e;
+    --o-color: #fefefe;
+    --s-color: #cfd1ec;
+    --t-color: #0b0a30;
+    --f-color: #7e4182;
 }
 
 .popout {

@@ -92,9 +92,11 @@ function createNameBoxes () {
     for (let i=0; i<toAdd; i++) {
         const newInput = document.createElement('input');
         newInput.id = "name" + (numUsersPrev + i);
+        newInput.style = "height: 25px; background-color:var(--o-color);";
   
-        const currentDiv = document.getElementById('flex');
-        document.body.insertBefore(newInput, currentDiv);
+        // const currentDiv = document.getElementById('flex');
+        // document.body.insertBefore(newInput, currentDiv);
+        document.getElementById('nameBoxes').appendChild(newInput);
     }
 
     // remove elems
@@ -105,7 +107,6 @@ function createNameBoxes () {
         }
     }
 
-    ls_set('totalUsers', totalUsers);
     numUsersPrev = numUsers;
 }
 
@@ -113,6 +114,9 @@ function createNameBoxes () {
  * Establishes group and saves all names
  */
 function setGroup () {
+    newGroup();
+    ls_set('totalUsers', totalUsers);
+
     var groupNum = localStorage.getItem('totalGroups');
     localStorage.setItem(groupNum + 'groupName', document.getElementById('groupName').value);      // prepend id 
 
@@ -189,10 +193,17 @@ async function logMovieData() {
     const parser = new DOMParser();
 	const doc = parser.parseFromString(imdb_html, 'text/html');
     var imgs = doc.querySelectorAll('.loadlate');
+    console.log(imgs);
 
     for (let i=0; i<3; i++) {
-        ls_set(('url' + i), imgs[i].getAttribute('loadlate'));
-        ls_set(('title' + i), imgs[i].getAttribute('alt'));
+        if(imgs.length != 0) {
+            ls_set(('url' + i), imgs[i].getAttribute('loadlate'));
+            ls_set(('title' + i), imgs[i].getAttribute('alt'));    
+        }
+        else {
+            console.log("retype");
+            return;
+        }
     }
 
     redirect('confirm_movie.html');
@@ -215,12 +226,12 @@ function displaySearchHits() {
 
         const newImg = document.createElement('img');
         newImg.setAttribute('src', url);
-        newImg.setAttribute('width', '200px');
+        newImg.setAttribute('width', '133px');
         newImg.setAttribute('height', '200px');
         newImg.className = "popout";
 
         newButton.appendChild(newImg);
-        document.body.appendChild(newButton);
+        document.getElementById('frames').appendChild(newButton);
     }
 }
 
@@ -232,17 +243,22 @@ function displaySearchHits() {
  */
 function setMovieData (el) {
     var index = ls_get('moviesSelected');
+    var confirmButton = document.getElementById('confirm');
     
     // non-duplicate, user can select
     if (!ls_get(el.id)) {
         ls_set(('movie' + index), el.id);               // title
         ls_set(('image' + index), el.firstChild.src);   // image url
         ls_set('tempTally', el.id);                     // tally
-        document.getElementById('confirm').removeAttribute('disabled');
+        confirmButton.removeAttribute('disabled');
+        confirmButton.className = "user-button";
+        // confirmButton.style = "background-color: var(--f-color);"
     }
     // duplicate choice, user must pick something else
     else {
-        document.getElementById('confirm').setAttribute('disabled', 'true');
+        confirmButton.setAttribute('disabled', 'true');
+        confirmButton.className = "user-button-gray";
+        // confirmButton.style = "background-color: #5a5a5a;";
     }
 
     console.log(el.id);
@@ -330,6 +346,8 @@ function changeCurrId (el) {
     localStorage.setItem('groupId', el.id);
     // console.log(el.id);
 }
+
+// issue: creating new group without actually forming it adds it to the existing group list 
 
 function prevGroup () {
     // var totalUsers = 
