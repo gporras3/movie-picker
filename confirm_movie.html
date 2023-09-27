@@ -4,22 +4,27 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>FlixPix - Select a Movie</title>
+        <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
 
-    <body class="body" onload="displaySearchHits();">
-        <div class="gen_box" style="position: absolute; flex-direction: column; width: 600px;">
-            <div class="gen_box" id="frames"></div>
+    <body class="body" onload="navbar(); customNavbar(); printName(); displaySearchHits();">
 
-            <div class="gen_box">
-                <button type="button" id="back" class="user-button" onclick="redirect('name_and_movie.html');">Back</button>
-                <button type="button" id="confirm" class="user-button" onclick="nextName();">Confirm</button>    
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column; width: 600px; height: 500px; justify-content: space-between; align-items: center;">
+                <span id="name" style="color: var(--t-color); font: bold 75px Calibri"></span>
+
+                <div class="gen_box" style="justify-content: space-between; margin: 0; width:600px;" id="frames"></div>
+
+                <div class="gen_box" style="justify-content: space-around; margin: 0; width:500px;">
+                    <button type="button" id="back" class="user-button" onclick="redirect('name_and_movie.html');">Back</button>
+                    <button type="button" id="confirm" class="user-button-gray" disabled="true" onclick="nextName();">Confirm</button>    
+                </div>
+
             </div>
         </div>
-
         <script src="help.js"></script>
     </body>
 </html>

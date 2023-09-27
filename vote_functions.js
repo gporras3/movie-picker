@@ -5,12 +5,16 @@ function newVoter() {
     var key = "name" + ls_get('votesCasted');
     var name = ls_get(key);
 
-    const newDiv = document.createElement('div');
+    // const newDiv = document.createElement('div');
     const newContent = document.createTextNode(name);
-    newDiv.id = key;
+    // newDiv.id = key;
 
-    newDiv.appendChild(newContent);
-    document.body.appendChild(newDiv);
+    // newDiv.appendChild(newContent);
+    // document.body.appendChild(newDiv);
+    document.getElementById('name').appendChild(newContent);
+
+    var tabText = 'FlixPix - ' + name + ': Vote';
+    document.title = tabText;
 }
 
 /**
@@ -80,15 +84,32 @@ function makeMovieFrames() {
     var tot = ls_get('allowedToPick');
 
     for (let i=0; i<tot; i++) {
+        const title = ls_get('movie' + i);
+
+        const box = document.createElement('div');
         const frame = document.createElement('div');
         const icon = document.createElement('img');
+
+        const rankNum = document.createTextNode('Choice #' + (i + 1));
+        // const movieName = document.createTextNode(title);
+
+        const text = document.createElement('span');
+        // const movietitle = document.getElementById('pick' + i).getAttribute('movie-title');
+        const words = document.createTextNode(title);
+
+        text.style = 'width:133px; text-align:center; margin-top: 10px; margin-bottom:10px;';
+        text.id = 'pick' + i + 'title';
+        text.appendChild(words);
+
+        box.className = 'gen_box';
+        box.style = 'flex-direction: column; align-items: center; justify-content:start; min-height: 250px;';
 
         frame.setAttribute('class', 'frame');
         frame.setAttribute('icon-present', 'true');
 
         icon.id = 'pick' + i;
         icon.setAttribute('src', ls_get('image' + i));
-        icon.setAttribute('movie-title', ls_get('movie' + i));
+        icon.setAttribute('movie-title', title);
         
         icon.setAttribute('draggable', 'true');
         icon.setAttribute('ondragstart', 'drag(event)');
@@ -96,11 +117,17 @@ function makeMovieFrames() {
         icon.setAttribute('ondrop', 'drop(event)');
         icon.setAttribute('ondragleave', 'resetMove()');
         
-        icon.setAttribute('width', '200px');
+        icon.setAttribute('width', '133px');
         icon.setAttribute('height', '200px');
 
         frame.appendChild(icon);
-        document.body.appendChild(frame);
+
+        box.appendChild(rankNum);
+        box.appendChild(frame);
+        box.appendChild(text);
+
+        document.getElementById('frames').appendChild(box);
+        // document.body.appendChild(frame);
     }
 }
 
@@ -170,16 +197,24 @@ function pushRight(startId) {
     const icon = document.getElementById(destId);
     const frame = icon.parentElement;
 
+    // var destIdTitle = 'pick' + startId + 'title';
+    // const title = document.getElementById(destIdTitle);
+
     // base case #1, pushed as far right as possible 
     if (startId > ls_get('allowedToPick')) {
         return;
     }
 
+    console.log(startId);
     // base case #2, found empty spot, no need to push further 
     if (!frame.getAttribute('icon-present')) {
         icon.setAttribute('src', ls_get('iconToMove'));
         icon.setAttribute('movie-title', ls_get('titleMove'));
         frame.setAttribute('icon-present', 'true');
+        // title.
+        console.log('move: ' + ls_get('titleMove'));
+        console.log('remove: ' + ls_get('titleRemove'));
+        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleMove');
     }
 
     // recursive case, need to push image that we're replacing 
@@ -193,6 +228,8 @@ function pushRight(startId) {
         icon.setAttribute('movie-title', ls_get('titleMove'));
         ls_set('titleMove', tempTitle);
         ls_set('titleRemove', document.getElementById("pick"+(startId+1)).getAttribute('movie-title'));  
+
+        document.getElementById('pick' + (startId) + 'title').innerText = icon.getAttribute('movie-title');
 
         pushRight(startId+1);
     }
@@ -212,6 +249,7 @@ function pushLeft(startId) {
         icon.setAttribute('src', ls_get('iconToMove'));
         icon.setAttribute('movie-title', ls_get('titleMove'));
         frame.setAttribute('icon-present', 'true');
+        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleMove');
     }
 
     // image in spot
@@ -224,7 +262,9 @@ function pushLeft(startId) {
         tempTitle = ls_get('titleRemove');
         icon.setAttribute('movie-title', ls_get('titleMove'));
         ls_set('titleMove', tempTitle);
-        ls_set('titleRemove', document.getElementById("pick"+(startId-1)).getAttribute('movie-title'));  
+        ls_set('titleRemove', document.getElementById("pick"+(startId-1)).getAttribute('movie-title')); 
+        
+        document.getElementById('pick' + (startId) + 'title').innerText = icon.getAttribute('movie-title');
 
         // recurse, keep pushing icons left
         pushLeft(startId-1);
@@ -266,13 +306,23 @@ function declareWinner () {
     var high = 1000000;
     var winner;
 
-    for (let i=0; i<3; i++) {
-        var currTitle = ls_get(('movie' + i));
+    var allowed = ls_get('allowedToPick');
+    var tot = ls_get('totalUsers');
+    var diff = tot - allowed;
+    for (let i=0; i<tot; i++) {
+        if (ls_get(i + 'win') == 1) {
+            continue;
+        }
+
+        var currTitle = ls_get(('movie' + (i - diff)));
         console.log(currTitle);
 
         if (ls_get(currTitle) < high) {
             console.log("score"+ls_get(currTitle));
-            winner = currTitle;
+            // winner = currTitle;
+            // winner = (i-diff);
+            winner = i - diff;
+            console.log ('winner: ' + winner);
             high = ls_get(currTitle);
         }
 
@@ -281,11 +331,62 @@ function declareWinner () {
 
     console.log("Winner is: " + winner);
 
+    const frame = document.createElement('div');
+    frame.className = 'frame';
+
+    const img = document.createElement('img');
+    // img.src = localStorage.getItem(winner + '_')
+    img.src = ls_get('image' + winner);
+    img.style = 'width: 133px; height: 200px;'
+    
+    const title = document.createTextNode(ls_get('movie' + winner));
+    frame.appendChild(img);
+    document.getElementById('winner').appendChild(frame);
+    document.getElementById('winner').appendChild(title);
+
+
     var day =  ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
     console.log(day);
     ls_set('day', day);
     ls_set('moviesSelected', 0);
     ls_set('votesCasted', 0);
 
-    // ls_set('allowedToPick', ls_get('totalUsers') - ls_get('day'));
+    if (day == 0) {
+        for (let i=0; i<ls_get('totalUsers'); i++) {        // full cycle complete, reset winners
+            ls_set(i + 'win', 0);
+        }
+    }
+    else {
+        ls_set((winner+diff) + 'win', 1);      // mark winner
+    }
+}
+
+function navbar () {
+    var navbar = `
+        <div class="navbar">
+            <span class="navtext">About</span>
+            <span class="navtext">Explore</span>
+            <span class="navtext">History</span>
+            <span class="navtext">Groups</span>
+            <span class="navtextRight" id="dayNavbar"></span>
+            <span class="navtextRight" id="groupNavbar"></span>
+        </div>`;
+
+    document.body.insertAdjacentHTML('afterbegin', navbar);
+}
+
+/**
+ * Customizes the navigation bar to include group name and day
+ * in cycle. Only for pages after group creation (movie select,
+ * vote, etc.)
+ */
+function customNavbar () {
+    const groupName = ls_get('groupName');
+    const nameText = document.createTextNode('Group: ' + groupName);
+    document.getElementById('groupNavbar').appendChild(nameText);
+
+    const day = parseInt(ls_get('day'));
+    const tot = ls_get('totalUsers');
+    const dayText = document.createTextNode('Day: ' + (day + 1) + '/' + tot);
+    document.getElementById('dayNavbar').appendChild(dayText);
 }

@@ -10,11 +10,15 @@
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
 
-    <body class="body" onload="newVoter(); makeMovieFrames();">
+    <body class="body" onload="navbar(); customNavbar(); newVoter(); makeMovieFrames();">
     
-        <div>vote</div>
-        <button type="button" onclick="nextVoter();">confirm vote</button>
-
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column;  min-height: 500px; justify-content: space-between; align-items: center;">
+                <span id="name" style="color: var(--t-color); font: bold 75px Calibri"></span>
+                <div id="frames" class="gen_box" style="justify-content: space-between; margin: 0; width: 900px; flex-wrap: wrap;"></div>
+                <button type="button" class="user-button" style="margin-top: 25px;" onclick="nextVoter();">Confirm Vote</button>
+            </div>
+        </div>
         <script src="vote_functions.js"></script>
     </body>
 </html>

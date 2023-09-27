@@ -4,18 +4,24 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>pork</title>
+        <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body" onload="printName();">
-        <div>name</div>
-        <div>continue</div>
-
-        <input type="text" id='movie' placeholder="movie choice">
-        <button type="button" onclick="logMovieData();">confirm</button>
+    <body class="body" onload="navbar(); customNavbar(); printName(); addInput();">
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column; align-items: center; height: 200px;">
+                <span id="name" style="color: var(--t-color); font: bold 75px Calibri"></span>
+                <div class="gen_box" style="margin-bottom: 20px;">
+                    <input type="text" id='movie' placeholder="movie choice">
+                    <button class="rightArrow" id="confirm" type="button" onclick="logMovieData();" style="margin-left: 1px;"><i style="font-size: 25px;" class="fa fa-arrow-right"></i></button>
+                    <!-- <button class="rightArrow" type="button" onclick="redirect('confirm_movie.html');" style="margin-left: 1px;"><i style="font-size: 25px;" class="fa fa-arrow-right"></i></button> -->
+                </div>
+            </div>
+        </div>
 
         <script src="help.js"></script>
     </body>
