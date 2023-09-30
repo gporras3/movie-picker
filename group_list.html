@@ -4,22 +4,37 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>steak</title>
+        <title>FlixPix - Choose Group</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body" onload="displayGroupList();">
-        
+    <body class="body" onload="navbar(); displayGroupList();">
 
-        <div class="box">
-            <button type="button" class="user-button" onclick="redirect('home.html');">Go Back</button>
-            <!-- <button type="button" class="user-button" onclick="setGroup();">Continue</button>
-            <button type="button" class="user-button" onclick=""></button> -->
+        <!-- <div class="wrapper" style="display: none"> -->
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column; align-items: center;">
+                <div id="groups"></div>
+                <button type="button" class="user-button" style="margin-top: 15px;" onclick="redirect('home.html');">Go Back</button>
+            </div>
+        </div>
+
+        <div id="editPopup" class="popup" onclick="closePopup();">
+            <div class="mini-wrapper" onclick="event.stopPropagation();">
+                <div class="innerWrapper">
+                    <input type="text" id="nameEdit" placeholder="New Group Name">
+                    <div id="nameList"></div>
+                    <button id="editButton" type="button" class="user-button" style="margin-top: 15px;" onclick="editGroup(this); closePopup(); location.reload();">Confirm</button>
+                    <button type="button" style="position: absolute; top: 0; right: 0;" onclick="closePopup();"><i class="fa fa-remove"></i></button>
+                </div>
+            </div>
+            
         </div>
 
         <script src="help.js"></script>
+        <script src="group_list.js"></script>
     </body>
 </html>
 <!-- <a  href="https://icons8.com/icon/62888/plus-math">Plus Math</a> icon by <a href="https://icons8.com">Icons8</a> -->

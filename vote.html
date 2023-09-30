@@ -4,17 +4,22 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>veal</title>
+        <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body" onload="newVoter(); makeMovieFrames();">
+    <body class="body" onload="navbar(); customNavbar(); newVoter(); makeMovieFrames();">
     
-        <div>vote</div>
-        <button type="button" onclick="nextVoter();">confirm vote</button>
-
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column;  min-height: 500px; justify-content: space-between; align-items: center;">
+                <span id="name" style="color: var(--navy-blue); font: bold 75px Calibri"></span>
+                <div id="frames" class="gen_box" style="justify-content: space-between; margin: 0; width: 900px; flex-wrap: wrap;"></div>
+                <button type="button" class="user-button" style="margin-top: 25px;" onclick="nextVoter();">Confirm Vote</button>
+            </div>
+        </div>
         <script src="vote_functions.js"></script>
     </body>
 </html>

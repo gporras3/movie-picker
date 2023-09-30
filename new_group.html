@@ -8,39 +8,39 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css" type="text/css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body">
-        <div class="gen_box" style="height:200px; width:500px; justify-content: space-between; flex-direction: column; ">
-
-            <div class="gen_box" style="justify-content: center; height:50px;">
-                <input type="text" placeholder="Group Name" id="groupName" style="width: 400px; font-size: 30px; background-color: var(--o-color);">
+    <body class="body" onload="navbar();">
+        <div class="wrapper">
+            <div class="gen_box" style="height:150px; width:500px; justify-content: space-between; flex-direction: column;">
+                <div class="gen_box" style="height:50px; flex-direction: column; align-items: center; ">
+                    <span style="font-variant: small-caps; color: #303030; font-weight: bold; font-size: 18px;">Name</span>
+                    <input type="text" placeholder="Group Name" id="groupName">
+                </div>
+    
+                <div class="gen_box" style="margin: 0; flex-direction: column; align-items: center;">
+                    <span style="font-variant: small-caps; color: #303030; font-weight: bold; font-size: 18px;">Size</span>
+                    <div class="gen_box" style="width: 300px; justify-content: space-around;">
+                        <button type="button" class="circle-button" onclick="decreaseUsers();"><i class="fa fa-minus"></i></button>
+                        <input type="text" id="numUsers" style="width: 50px; text-align: center; overflow: hidden;" oninput="createNameBoxes();">
+                        <button type="button" class="circle-button" onclick="increaseUsers();"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
             </div>
-
-            <!-- transform: translate(0px, 25vh);  -->
-
-            <div class="gen_box" style="justify-content: space-around;">
-                <button type="button" class="circle-button" onclick="decreaseUsers();"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAQElEQVR4nO3RQQoAEAAF0Tke7r+m5B6sbGVBKfPqr2fxQZKkTQkoQD+8AsRVuF6IzrUnwxHIF6IZCLt/S5I+NwDHN1vXMmzw6wAAAABJRU5ErkJggg=="></button>
-                <input type="text" placeholder="Group Size" id="numUsers" oninput="createNameBoxes();">
-                <button type="button" class="circle-button" onclick="increaseUsers();"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAc0lEQVR4nO2UMQqAMAxF3/Gsg3j/wULVQS8Rl05FpGATpeTBX/MgCR+cnzMDJ3AAk6V4ByRnsxRLERerIb5qK6SbVY9AvBn8NhEIT+KkIK1quPSVOACLgnQBBhrQz1fX4mIzxG9sRSzKwYwArDlNGslBiwtYs6fhOILl9QAAAABJRU5ErkJggg=="></button>
-            </div>
-
             
-
-        </div>
-        
-        <div class="gen_box" style="height:auto; width:500px; justify-content: space-between; flex-direction: column;">
-            <div class="gen_box" id="nameBoxes" style="flex-direction: column;">
+            <div class="gen_box" style="height:auto; width:500px; justify-content: space-between; flex-direction: column; margin-top: 20px; margin-bottom: 20px;">
+                <div class="gen_box" id="nameBoxes" style="flex-direction: column;"></div>
+            </div>
+            
+            <!-- <div class="gen_box" style="width:500px; margin-top: 20px; margin-bottom: 20px;"> -->
+                <div class="gen_box" style="width:500px; margin: 20px auto">
+                    <button type="button" class="user-button" onclick="redirect('home.html');">Go Back</button>
+                    <button type="button" id="continue" class="user-button-gray" disabled="true" onclick="setGroup();">Continue</button>
             </div>
 
-            <!-- <button type="button" class="user-button" onclick="redirect('home.html');">Go Back</button>
-            <button type="button" class="user-button" onclick="setGroup();">Continue</button> -->
         </div>
         
-        <div class="gen_box" style="width:500px">
-                <button type="button" class="user-button" onclick="redirect('home.html');">Go Back</button>
-                <button type="button" class="user-button" onclick="setGroup();">Continue</button>
-        </div>
         <script src="help.js"></script>
     </body>
 </html>

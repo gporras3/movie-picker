@@ -10,7 +10,15 @@
         <link rel="stylesheet" href="style.css" type="text/css">
     </head>
     
-    <body class="body">
+    <body class="body" onload="navbar();">
+        <!-- <embed type="text/html" src="navbar.html"> -->
+        <!-- <div class="navbar">
+            <span>About</span>
+            <span>Explore</span>
+            <span>History</span>
+            <span>Groups</span>
+        </div> -->
+
         <div class="box_vert" >
             <span class="text_main">Welcome to [website name].</span>
             <span class="text_detail">Use a ranked voting system to decide what to watch for movie night.</span>
@@ -24,6 +32,8 @@
         </div>
 
         <button type="button" onclick="resetStorage();">reset</button>
+        <button type="button" onclick="mockGroup();">test</button>
+        <button type="button" onclick="mockGroup2();">test2</button>
         <script src="help.js"></script>
 
     </body>

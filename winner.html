@@ -13,12 +13,16 @@
 
     </head>
 
-    <body class="body" onload="declareWinner(); summary();">
+    <body class="body" onload="navbar(); customNavbar(); declareWinner();">
+    <!-- <body class="body" onload="navbar(); customNavbar(); declareWinner(); summary();"> -->
     
-        <div>winner winner chicken dinner</div>
-        <input type="text" id="input">
-        <div id="output"></div>
-        <button type="button" onclick="redirect('home.html')">home</button>
+        <div class="wrapper">
+            <div class="gen_box" style="flex-direction: column; align-items: center; justify-content: space-between; min-height: 450px">
+                <span style="color: var(--navy-blue); font: bold 75px Calibri">Winner is...</span>
+                <div id="winner" class="gen_box" style="align-items: center; flex-direction: column; animation:fadeIn 7s;"></div>
+                <button type="button" class="user-button" onclick="redirect('home.html')">Home</button>
+            </div>
+        </div>
 
 
         <script src="vote_functions.js"></script>
