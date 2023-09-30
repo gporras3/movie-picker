@@ -99,7 +99,7 @@ function createNameBoxes () {
         const newInput = document.createElement('input');
 
         userNum.id = 'user' + (numUsersPrev + i);
-        userNum.style = 'margin: 0; float: left; color: var(--t-color); font: small-caps bold 16px Calibri';
+        userNum.style = 'margin: 0; float: left; color: var(--navy-blue); font: small-caps bold 16px Calibri';
         userNum.appendChild(userNumText);
         
         newInput.id = 'name' + (numUsersPrev + i);
@@ -155,7 +155,7 @@ function setGroup () {
     ls_set('allowedToPick', totalUsers);
     ls_set('moviesSelected', 0);            // how many users selected a movie
     ls_set('votesCasted', 0);               // how many users ranked the movies
-    ls_set('ptr', 0);
+    ls_set('userIdx', 0);
 
     var tot = totalUsers;
     for (let i=0; i<tot; i++) {
@@ -171,40 +171,27 @@ function setGroup () {
  * Prints name of the next person to select their movie. Also
  * customizes tab name based on user selecting
  */
-// var ptr;
 function printName () {
-    // var index = ls_get('moviesSelected');
-
-    // ptr = 0;
-    var ptr = ls_get('ptr');
-    while (ls_get(ptr + 'win') == 1) {
-        ptr++;
-        ls_set('ptr', ptr);
+    var idx = ls_get('userIdx');
+    // when user deleted, leaves gap in user indexes, this skips to next valid index
+    while (ls_get(idx + 'win') == 1) {
+        ls_set('userIdx', idx);
     }
 
-    var currName = ls_get('name' + ptr);
-    // if (ls_get(ptr + 'win') == 1) {
-    //     ptr++;
-    //     var currName = ls_get('name' + index );
+    // insert name div
+    const currName = ls_get('name' + idx);
+    const name = document.createTextNode(currName);
+    document.getElementById('name').prepend(name);
 
-    // }
-    // else {
-    //     var currName = ls_get('name' + index );
-
-    // }
-
-    const newContent = document.createTextNode(currName);
-    document.getElementById('name').appendChild(newContent);
-
-    var tabText = 'FlixPix - ' + currName + ': Select a Movie';
-    document.title = tabText;
+    // change tab text
+    document.title = 'FlixPix - ' + currName + ': Select a Movie';
 }
 
 /**
  * Additional user confirmed their movie choice, move to next user (or vote page)
  */
 var moviesSelected;
-var ptr;
+// var ptr;
 function nextName () {
     ls_set(ls_get('tempTally'), 0);                               // tally
 
@@ -218,11 +205,19 @@ function nextName () {
     moviesSelected = ls_get('moviesSelected');
     ls_set('moviesSelected', ++moviesSelected);    
     
-    ptr = ls_get('ptr');
-    ls_set('ptr', ++ptr);
+    ptr = ls_get('userIdx');
+    ls_set('userIdx', ++ptr);
     // all movies selected, proceed to vote
     var tot = ls_get('allowedToPick');
+    // if(tot == 1) {
+    //     console.log('hey')
+    //     redirect('winner.html');
+    // }
     if (moviesSelected == tot) {
+        if (tot == 1) {
+            redirect('winner.html');
+            return;
+        }
         redirect('vote.html');
     } 
     // some members yet to select
@@ -354,46 +349,7 @@ function removeOtherBorders () {
 
 
 
-/**
- * Used to display all previous groups that were created. Selecting
- * group changes the current id and thus data we look at 
- */
-function displayGroupList () {
-    const totGroups = parseInt(localStorage.getItem('totalGroups')) + 1;     // indexed at 0
 
-    for (let i=0; i<totGroups; i++) {
-        const newDiv = document.createElement('div');
-        const newButton = document.createElement('button');
-
-        newButton.setAttribute('type', 'button');
-        newButton.setAttribute('onclick', 'changeCurrId(this); changeDay(); redirect("name_and_movie.html");');
-        newButton.id = i;
-
-        const groupNameText = localStorage.getItem(i + '_groupName');  // can't use ls_get here because don't want index 
-        const groupName = document.createTextNode(groupNameText);
-        newButton.appendChild(groupName);
-
-        newDiv.appendChild(newButton);
-        document.body.appendChild(newDiv);
-    }
-}
-
-/**
- * Helper function to change groupId var when we change our group
- */
-function changeCurrId (el) {
-    localStorage.setItem('groupId', el.id);
-}
-
-/**
- * Upon selecting a previous group, change the day in cycle by allowing
- * one less user to select a movie (all previous winners in cycle may
- * not select but can still vote)
- */
-function changeDay () {
-    ls_set('allowedToPick', parseInt(ls_get('totalUsers')) - parseInt(ls_get('day')));
-    ls_set('ptr', 0);
-}
 
 
 
@@ -446,4 +402,44 @@ function addInput () {
 
 function resetStorage () {
     localStorage.clear();
+}
+
+
+function mockGroup () {
+
+    localStorage.setItem('groupId',	0);
+    localStorage.setItem('totalGroups',	1	);
+    localStorage.setItem('0_day',	0	);
+
+    localStorage.setItem('0_groupName',	'kawhi');	
+    localStorage.setItem('0_totalUsers',	3	);
+    localStorage.setItem('0_allowedToPick',	3);	
+
+    localStorage.setItem('0_moviesSelected',	0	);
+    localStorage.setItem('0_votesCasted',	0	);
+    localStorage.setItem('0_ptr',	3	);
+
+    localStorage.setItem('0_name0',	'jake');	
+    localStorage.setItem('0_0win',	0	);
+    localStorage.setItem('0_name1',	'levi');	
+
+    localStorage.setItem('0_1win',	0	);
+    localStorage.setItem('0_name2',	'peace'	);
+    localStorage.setItem('0_2win',	0);
+}
+
+function mockGroup2 () {
+    localStorage.setItem('1_day',	1	);
+    localStorage.setItem('1_groupName',	'kawhi');	
+    localStorage.setItem('1_totalUsers',	3	);
+    localStorage.setItem('1_allowedToPick',	3);	
+    localStorage.setItem('1_moviesSelected',	0	);
+    localStorage.setItem('1_votesCasted',	0	);
+    localStorage.setItem('1_ptr',	3	);
+    localStorage.setItem('1_name0',	'jake');	
+    localStorage.setItem('1_0win',	1	);
+    localStorage.setItem('1_name1',	'levi');	
+    localStorage.setItem('1_1win',	0	);
+    localStorage.setItem('1_name2',	'peace'	);
+    localStorage.setItem('1_2win',	0);
 }

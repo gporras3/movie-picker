@@ -103,26 +103,49 @@
     height: 50px;
     width: 50px;
     border-radius: 50%;
-    background-color: var(--t-color);
+    background-color: var(--navy-blue);
     color: var(--o-color);
     border:none;
 }
 
+.group-button {
+    display: flex; 
+    height: 120px;
+    width: 600px;
+    background-color: var(--o-color);
+    margin-bottom: 20px;
+    border: 2px solid var(--navy-blue);
+    border-radius: 3px;
+}
+
+.group-button:hover {
+    transition: 0.15s;
+    transform: scale(1.1);
+}
+
+.fa-trash-o:hover {
+    font-weight: bold;
+}
+
+.fa-edit:hover {
+    font-weight: bold;
+}
+
 .rightArrow {
-    background-color: var(--t-color);
+    background-color: var(--navy-blue);
     color: var(--o-color);
     border: none;
     border-radius: 4px;
 }
 
 .text_main {
-    color: var(--t-color);
+    color: var(--navy-blue);
     font-size: 75px;
     font-weight: bold;
 }
 
 .text_detail {
-    color: var(--t-color);
+    color: var(--navy-blue);
     font-size: 40px;
 }
 
@@ -130,12 +153,11 @@
 
 input {
     background-color: var(--o-color);
-    color: var(--t-color);
+    color: var(--navy-blue);
     width: 400px;
     font-size: 30px;
     border-radius: 4px;
 }
-
 
 .body {
     min-height: 100vh;
@@ -148,8 +170,10 @@ input {
 :root {
     --o-color: #fefefe;
     --s-color: #cfd1ec;
-    --t-color: #0b0a30;
+    --navy-blue: #0b0a30;
     --f-color: #7e4182;
+    --trash-red: #75160f;
+    --group-bg: #d7d7d7;
 }
 
 .popout {
@@ -163,7 +187,7 @@ input {
 }
 
 .navbar {
-    background-color: var(--t-color);
+    background-color: var(--navy-blue);
     color: var(--o-color);
     height: 50px;
     font-size: 20px;
@@ -181,7 +205,7 @@ input {
 
 .navbar .navtext:hover {
     background-color: var(--o-color);
-    color: var(--t-color);
+    color: var(--navy-blue);
 }
 
 .wrapper {
@@ -203,12 +227,49 @@ input {
 .wrapper div {
     margin-left: auto;
     margin-right: auto;
-    
-    
 }
+
+.mini-wrapper {
+    background-color: var(--o-color);
+    align-items: center;
+    justify-content: center;
+    width: 34vw;
+    height: 34vh;
+    margin: 33vh 33vw;
+}
+
+/* 1 vw = 17
+1 vh = 8 */
 
 @keyframes fadeIn {
     0% { opacity: 0; }
     25% { opacity: 0; }
     100% { opacity: 1; }
+}
+
+.popup {
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.editGroupIcon {
+    background-color: var(--group-bg); 
+    border: none; 
+    width: calc(100%); 
+    height: calc(50%);
 }

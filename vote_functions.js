@@ -13,6 +13,13 @@ function newVoter() {
     // document.body.appendChild(newDiv);
     document.getElementById('name').appendChild(newContent);
 
+    if (ls_get(ls_get('votesCasted') + 'win') == 1) {
+        const newIcon = document.createElement('i');
+        newIcon.style = 'font-size: 30px; margin-left: 10px; vertical-align: middle;'
+        newIcon.className = 'fa fa-star';
+        document.getElementById('name').appendChild(newIcon);
+    }
+
     var tabText = 'FlixPix - ' + name + ': Vote';
     document.title = tabText;
 }
