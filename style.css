@@ -193,20 +193,23 @@ input {
 }
 
 .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: var(--navy-blue);
     color: var(--o-color);
     height: 50px;
     font-size: 20px;
+    padding-top: 0px;
 }
 
 .navbar .navtext {
-    padding: 15px 16px;
+    display: inline-block;
+    /* position:absolute; */
+    margin-top: 0px;
+    padding-left: 16px;
+    padding-right: 16px;
     line-height: 50px;
-}
-
-.navbar .navtextRight {
-    padding: 15px 16px;
-    float: right;
 }
 
 .navbar .navtext:hover {
@@ -296,4 +299,19 @@ input {
 .close:hover {
     font-weight: bold;
     color: var(--navy-blue);
+}
+
+.fa-home {
+    background-color: transparent;
+    width: 40px;
+    height: 50px;
+    color: var(--o-color);
+    border: none;
+    /* padding: 15px 16px; */
+    line-height: 50px;
+}
+
+.fa-home:hover {
+    color: var(--navy-blue);
+    background-color: var(--o-color);
 }

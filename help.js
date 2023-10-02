@@ -369,12 +369,17 @@ function removeOtherBorders () {
 function navbar () {
     const navbar = `
         <div class="navbar">
-            <span class="navtext">About</span>
-            <span class="navtext">Explore</span>
-            <span class="navtext">History</span>
-            <span class="navtext">Groups</span>
-            <span class="navtextRight" id="dayNavbar"></span>
-            <span class="navtextRight" id="groupNavbar"></span>
+            <div class="gen_box" style="height: inherit;">
+                <button type="button" class="fa fa-home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
+                <span class="navtext">About</span>
+                <span class="navtext">Explore</span>
+                <span class="navtext">History</span>
+                <span class="navtext">Groups</span>
+            </div>
+            <div class="gen_box">
+                <span id="groupNavbar" style="margin: 0px 20px;"></span>
+                <span id="dayNavbar" style="margin-right: 20px;"></span>
+            </div>
         </div>`;
 
     document.body.insertAdjacentHTML('afterbegin', navbar);
