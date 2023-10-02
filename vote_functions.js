@@ -1,27 +1,24 @@
 /**
- * Creates page element for the name of the next person to vote
+ * Creates page element for the name of the next person to vote. Also
+ * adds star next to their name if they were a winner in the current 
+ * cycle
  */
-function newVoter() {
-    var key = "name" + ls_get('votesCasted');
-    var name = ls_get(key);
+function newVoterName() {
+    const key = 'name' + ls_get('votesCasted');
+    const name = ls_get(key);
 
-    // const newDiv = document.createElement('div');
-    const newContent = document.createTextNode(name);
-    // newDiv.id = key;
+    const nameText = document.createTextNode(name);
+    document.getElementById('name').appendChild(nameText);
 
-    // newDiv.appendChild(newContent);
-    // document.body.appendChild(newDiv);
-    document.getElementById('name').appendChild(newContent);
-
+    // add star icon next to winners of current cycle 
     if (ls_get(ls_get('votesCasted') + 'win') == 1) {
-        const newIcon = document.createElement('i');
-        newIcon.style = 'font-size: 30px; margin-left: 10px; vertical-align: middle;'
-        newIcon.className = 'fa fa-star';
-        document.getElementById('name').appendChild(newIcon);
+        const star = document.createElement('i');
+        star.style = 'font-size: 30px; margin-left: 10px; vertical-align: middle;'
+        star.className = 'fa fa-star';
+        document.getElementById('name').appendChild(star);
     }
 
-    var tabText = 'FlixPix - ' + name + ': Vote';
-    document.title = tabText;
+    document.title = 'FlixPix - ' + name + ': Vote';
 }
 
 /**
@@ -35,7 +32,7 @@ function nextVoter() {
     var votes = ls_get('votesCasted');
     ls_set('votesCasted', ++votes);
 
-    var tot = ls_get('totalUsers');
+    const tot = ls_get('totalUsers');
     // all votes casted, proceed to winner
     if (votes == tot) {
         redirect('winner.html');
@@ -47,40 +44,28 @@ function nextVoter() {
 }
 
 /**
- * Records user's rankings of movies, adds to the tallies (lowest wins)
+ * Records user's rankings of movies, adds to the tallies (lowest wins).
+ * Rankings stored to be shown in summary. First place gets 0 pts, second
+ * gets 1 pt, etc.
  */
-function recordChoices () {
-    var tot = ls_get('allowedToPick');
-    var user = ls_get('votesCasted');
+function recordChoices() {
+    const tot = ls_get('allowedToPick');
+    const user = ls_get('votesCasted');
 
+    var idx = 0;
     for (let i=0; i<tot; i++) {
-        var title = document.getElementById('pick' + i).getAttribute('movie-title');
-
-        var rank = "rank" + user + i;
-        ls_set(rank, title);
-        ls_set(title, (parseInt(ls_get(title)) + i));
-    }
-}
-
-function summary () {
-    var tot = ls_get('allowedToPick');
-    var numUsers = ls_get('totalUsers');
-
-    for (let user=0; user<numUsers; user++) {
-        for (let pick=0; pick<tot; pick++) {
-            console.log(ls_get('rank' + user + pick));
+        // skips "ghost" data from previous winners
+        while (ls_get(idx + 'win') == 1) {
+            idx++;
         }
+
+        const title = document.getElementById('pick' + i).getAttribute('movie-title');
+        ls_set(title, (parseInt(ls_get(title)) + idx));
+
+        const rank = 'rank' + user + i;
+        ls_set(rank, title);
+        idx++;
     }
-}
-
-function storeEndData () {
-    // names
-
-    // group size
-
-    // day number 
-
-    // winner data (title, icon url)
 }
 
 /** 
@@ -88,53 +73,57 @@ function storeEndData () {
  * Order of icons determines user's votes
  */
 function makeMovieFrames() {
-    var tot = ls_get('allowedToPick');
+    const tot = ls_get('allowedToPick');
 
+    var idx = 0;
     for (let i=0; i<tot; i++) {
-        const title = ls_get('movie' + i);
+        // skips "ghost" data from previous winners
+        while (ls_get(idx + 'win') == 1) {
+            idx++;
+        }
+
+        const title = ls_get('movie' + idx);
 
         const box = document.createElement('div');
-        const frame = document.createElement('div');
-        const icon = document.createElement('img');
+        box.className = 'innerWrapper';
+            // text that tells user what choice the box is
+            const rankNum = document.createTextNode('Choice #' + (i + 1));
 
-        const rankNum = document.createTextNode('Choice #' + (i + 1));
-        // const movieName = document.createTextNode(title);
+            // frame with movie icon
+            const frame = document.createElement('div');
+            frame.setAttribute('class', 'frame');
+            frame.setAttribute('icon-present', 'true');    
 
-        const text = document.createElement('span');
-        // const movietitle = document.getElementById('pick' + i).getAttribute('movie-title');
-        const words = document.createTextNode(title);
+                const icon = document.createElement('img');
+                icon.style = 'width: 133px; height: 200px;'
+                icon.id = 'pick' + i;
 
-        text.style = 'width:133px; text-align:center; margin-top: 10px; margin-bottom:10px;';
-        text.id = 'pick' + i + 'title';
-        text.appendChild(words);
+                icon.setAttribute('src', ls_get('image' + idx));
+                icon.setAttribute('movie-title', title);
+                
+                icon.setAttribute('draggable', 'true');
+                icon.setAttribute('ondragstart', 'drag(event)');
+                icon.setAttribute('ondragover', 'allowDrop(event)');
+                icon.setAttribute('ondrop', 'drop(event)');
+                icon.setAttribute('ondragleave', 'resetIdToEvict()');
+                
+            frame.appendChild(icon);
 
-        box.className = 'gen_box';
-        box.style = 'flex-direction: column; align-items: center; justify-content:start; min-height: 250px;';
+            // text with movie title
+            const movie = document.createElement('span');
+            movie.style = 'width: 133px; text-align: center; margin: 10px 0px;';
+            movie.id = 'pick' + i + 'title';
+            
+                const titleText = document.createTextNode(title);
 
-        frame.setAttribute('class', 'frame');
-        frame.setAttribute('icon-present', 'true');
-
-        icon.id = 'pick' + i;
-        icon.setAttribute('src', ls_get('image' + i));
-        icon.setAttribute('movie-title', title);
-        
-        icon.setAttribute('draggable', 'true');
-        icon.setAttribute('ondragstart', 'drag(event)');
-        icon.setAttribute('ondragover', 'allowDrop(event)');
-        icon.setAttribute('ondrop', 'drop(event)');
-        icon.setAttribute('ondragleave', 'resetMove()');
-        
-        icon.setAttribute('width', '133px');
-        icon.setAttribute('height', '200px');
-
-        frame.appendChild(icon);
+            movie.appendChild(titleText);
 
         box.appendChild(rankNum);
         box.appendChild(frame);
-        box.appendChild(text);
+        box.appendChild(movie);
 
         document.getElementById('frames').appendChild(box);
-        // document.body.appendChild(frame);
+        idx++;
     }
 }
 
@@ -143,229 +132,255 @@ function makeMovieFrames() {
  * @param {Event} ev 
  */
 function drag(ev) {
-    var idName = ev.target.id;
+    const idName = ev.target.id;
 
-    ev.dataTransfer.setData("text", idName);
-    ls_set("tomove", idName.substr(4, idName.length));
-    ls_set("movToMove", idName);
-    ls_set("movToRemove", idName);
+    ev.dataTransfer.setData('text', idName);
+    ls_set('endId', idName.substr(4, idName.length));      // just gets number of id (e.g. get 0 from pick0)
+    ls_set('idInHand', idName);
+    ls_set('idToEvict', idName);
 
-    ls_set("iconToMove", document.getElementById(idName).getAttribute('src'));
-    ls_set("titleMove", document.getElementById(idName).getAttribute('movie-title'));
-
+    ls_set('iconInHand', document.getElementById(idName).getAttribute('src'));
+    ls_set('titleInHand', document.getElementById(idName).getAttribute('movie-title'));
 }
 
-/*    hovering over frame, record id of corresponding element    */
+/**
+ * Hovering over frame, record id of corresponding element
+ * @param {Event} ev 
+ */
 function allowDrop(ev) {
-    var idName = ev.target.id;
-    ls_set("tempIcon", ls_get("movToRemove"));
+    const idName = ev.target.id;
+    ls_set('tempId', ls_get('idToEvict'));
 
     ev.preventDefault();
-    ls_set("target", idName.substr(4, idName.length));
-    ls_set("movToRemove", idName);
-    ls_set("iconToRemove", document.getElementById(idName).getAttribute('src'));
-    ls_set("titleRemove", document.getElementById(idName).getAttribute('movie-title'));
+    ls_set('startId', idName.substr(4, idName.length));
+    ls_set('idToEvict', idName);
+
+    ls_set('iconToEvict', document.getElementById(idName).getAttribute('src'));
+    ls_set('titleToEvict', document.getElementById(idName).getAttribute('movie-title'));
 }
 
-/*    drop current icon on previous icon, evict    */
+/**
+ * Drop current icon on previous icon, evict
+ * @param {Event} ev 
+ * @returns None
+ */
 function drop(ev) {
-    // clear spot of current icon 
-    var currId = ls_get('movToMove');
+    const currId = ls_get('idInHand');
 
-    // gonna drop in original spot 
-    if (currId == ls_get("movToRemove")) {
+    // drop in original spot 
+    if (currId == ls_get('idToEvict')) {
         return;
     }
 
+    // clear spot of current icon 
     document.getElementById(currId).parentElement.removeAttribute('icon-present');
 
-    ev.preventDefault();
-    displace();
+    ev.preventDefault();   
+    displace();             // start moving icons
 }
 
-// newImg is new image in spot, returns previous img
-function displace () {
-    // nums of ids
-    var tar = ls_get("target");
-    var toMove = ls_get("tomove");
+/**
+ * Determines which direction we need to shift icons down 
+ */
+function displace() {
+    const startId = parseInt(ls_get('startId'));        // first icon we push out - where we want icon in hand to land
+    const endId = parseInt(ls_get('endId'));            // empty spot left by picking up icon in hand
 
-    if (parseInt(tar) > parseInt(toMove)) {
-        pushLeft(parseInt(tar));     // up
+    if (startId > endId) {
+        pushLeft(startId);
     }
-    else if (parseInt(tar) < parseInt(toMove)) {
-        pushRight(parseInt(tar));    // down
+    else if (startId < endId) {
+        pushRight(startId);
     }
 }
 
-var tempImgSrc;
-var tempTitle;
+/**
+ * Recursive function that pushes all icons down to the right 
+ * @param {Int} startId 
+ * @returns None
+ */
 function pushRight(startId) {
-    var destId = "pick" + startId;
+    const destId = 'pick' + startId;
     const icon = document.getElementById(destId);
     const frame = icon.parentElement;
-
-    // var destIdTitle = 'pick' + startId + 'title';
-    // const title = document.getElementById(destIdTitle);
 
     // base case #1, pushed as far right as possible 
     if (startId > ls_get('allowedToPick')) {
         return;
     }
 
-    console.log(startId);
     // base case #2, found empty spot, no need to push further 
     if (!frame.getAttribute('icon-present')) {
-        icon.setAttribute('src', ls_get('iconToMove'));
-        icon.setAttribute('movie-title', ls_get('titleMove'));
+        icon.setAttribute('src', ls_get('iconInHand'));
+        icon.setAttribute('movie-title', ls_get('titleInHand'));
         frame.setAttribute('icon-present', 'true');
-        // title.
-        console.log('move: ' + ls_get('titleMove'));
-        console.log('remove: ' + ls_get('titleRemove'));
-        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleMove');
+        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleInHand');
     }
 
     // recursive case, need to push image that we're replacing 
     else {
-        tempImgSrc = ls_get('iconToRemove');
-        icon.setAttribute('src', ls_get('iconToMove'));
-        ls_set('iconToMove', tempImgSrc);
-        ls_set('iconToRemove', document.getElementById("pick"+(startId+1)).getAttribute('src'));    
+        icon.setAttribute('src', ls_get('iconInHand'));
+        ls_set('iconInHand', ls_get('iconToEvict'));
+        ls_set('iconToEvict', document.getElementById('pick' + (startId + 1)).getAttribute('src'));    
 
-        tempTitle = ls_get('titleRemove');
-        icon.setAttribute('movie-title', ls_get('titleMove'));
-        ls_set('titleMove', tempTitle);
-        ls_set('titleRemove', document.getElementById("pick"+(startId+1)).getAttribute('movie-title'));  
+        icon.setAttribute('movie-title', ls_get('titleInHand'));
+        ls_set('titleInHand', ls_get('titleToEvict'));
+        ls_set('titleToEvict', document.getElementById('pick' + (startId + 1)).getAttribute('movie-title'));  
 
-        document.getElementById('pick' + (startId) + 'title').innerText = icon.getAttribute('movie-title');
+        document.getElementById('pick' + startId + 'title').innerText = icon.getAttribute('movie-title');   // update title text to match image
 
-        pushRight(startId+1);
+        // recurse, keep pushing icons right
+        pushRight(startId + 1);
     }
 }
 
+/**
+ * Recursive function that pushes all icons down to the left
+ * @param {Int} startId 
+ * @returns None
+ */
 function pushLeft(startId) {
-    var destId = "pick"+(startId);
+    const destId = 'pick' + startId;
     const icon = document.getElementById(destId);
     const frame = icon.parentElement;
 
+    // base case #1, pushed as far left as possible 
     if (startId < 0) {
         return;
     }
 
-    // empty spot, place image, done
+    // base case #2, found empty spot, no need to push further 
     if (!frame.getAttribute('icon-present')) {
-        icon.setAttribute('src', ls_get('iconToMove'));
-        icon.setAttribute('movie-title', ls_get('titleMove'));
+        icon.setAttribute('src', ls_get('iconInHand'));
+        icon.setAttribute('movie-title', ls_get('titleInHand'));
         frame.setAttribute('icon-present', 'true');
-        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleMove');
+        document.getElementById('pick' + startId + 'title').innerText = ls_get('titleInHand');
     }
 
-    // image in spot
+    // recursive case, need to push image that we're replacing 
     else {
-        tempImgSrc = ls_get('iconToRemove');
-        icon.setAttribute('src', ls_get('iconToMove'));
-        ls_set('iconToMove', tempImgSrc);
-        ls_set('iconToRemove', document.getElementById("pick"+(startId-1)).getAttribute('src'));   
+        icon.setAttribute('src', ls_get('iconInHand'));
+        ls_set('iconInHand', ls_get('iconToEvict'));
+        ls_set('iconToEvict', document.getElementById('pick' + (startId - 1)).getAttribute('src'));   
         
-        tempTitle = ls_get('titleRemove');
-        icon.setAttribute('movie-title', ls_get('titleMove'));
-        ls_set('titleMove', tempTitle);
-        ls_set('titleRemove', document.getElementById("pick"+(startId-1)).getAttribute('movie-title')); 
+        icon.setAttribute('movie-title', ls_get('titleInHand'));
+        ls_set('titleInHand', ls_get('titleToEvict'));
+        ls_set('titleToEvict', document.getElementById('pick' + (startId - 1)).getAttribute('movie-title')); 
         
-        document.getElementById('pick' + (startId) + 'title').innerText = icon.getAttribute('movie-title');
+        document.getElementById('pick' + startId + 'title').innerText = icon.getAttribute('movie-title');   // update title text to match image
 
         // recurse, keep pushing icons left
-        pushLeft(startId-1);
+        pushLeft(startId - 1);
     }
 }
 
 /**
  * When image leaves drop target (i.e. was hovering but user changed
- * mind), 
+ * mind), reset eviction id to self (thus, no shifting will be done) 
  */
-function resetMove() {
-    ls_set("movToRemove", ls_get("tempIcon"));
-}
-
-function redirect(url) {
-    location.href=url;
-}
-
-// getter, setter functions for local storage, just to make code cleaner
-function ls_get (key) {
-    var currGroup = localStorage.getItem('groupId');
-
-    return localStorage.getItem(currGroup + '_' + key);
-}
-
-function ls_set (key, value) {
-    var currGroup = localStorage.getItem('groupId');
-
-    localStorage.setItem(currGroup + '_' + key, value);
-}
-
-function ls_rem (key) {
-    var currGroup = localStorage.getItem('groupId');
-
-    localStorage.removeItem(currGroup + '_' + key);
+function resetIdToEvict() {
+    ls_set('idToEvict', ls_get('tempId'));
 }
 
 function declareWinner () {
     var high = 1000000;
     var winner;
 
-    var allowed = ls_get('allowedToPick');
-    var tot = ls_get('totalUsers');
-    var diff = tot - allowed;
+    const tot = ls_get('allowedToPick');
+    var idx = 0;
     for (let i=0; i<tot; i++) {
-        if (ls_get(i + 'win') == 1) {
-            continue;
+        while(ls_get(idx + 'win') == 1) {
+            idx++;
         }
+        // change this to while loop probably because gaps may exist
 
-        var currTitle = ls_get(('movie' + (i - diff)));
-        console.log(currTitle);
+        var currTitle = ls_get(('movie' + idx));
 
         if (ls_get(currTitle) < high) {
-            console.log("score"+ls_get(currTitle));
-            // winner = currTitle;
-            // winner = (i-diff);
-            winner = i - diff;
-            console.log ('winner: ' + winner);
+            winner = idx;
             high = ls_get(currTitle);
         }
 
+        console.log(currTitle + ': ' + ls_get(currTitle));
+        console.log(idx);
         ls_rem(currTitle);
+        idx++;
     }
 
-    console.log("Winner is: " + winner);
-
+    // frame that holds image of winning movie
     const frame = document.createElement('div');
     frame.className = 'frame';
 
-    const img = document.createElement('img');
-    // img.src = localStorage.getItem(winner + '_')
-    img.src = ls_get('image' + winner);
-    img.style = 'width: 133px; height: 200px;'
-    
-    const title = document.createTextNode(ls_get('movie' + winner));
+        const img = document.createElement('img');
+        img.src = ls_get('image' + winner);
+        img.style = 'width: 133px; height: 200px;'
+
     frame.appendChild(img);
+
+    // text of winning movie title
+    const title = document.createTextNode(ls_get('movie' + winner));
+
     document.getElementById('winner').appendChild(frame);
     document.getElementById('winner').appendChild(title);
 
-
-    var day =  ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
-    console.log(day);
+    // prepare group for next day in cycle 
+    const day = ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
     ls_set('day', day);
     ls_set('moviesSelected', 0);
     ls_set('votesCasted', 0);
 
+    // handle winner flags
     if (day == 0) {
+        var idx = 0;
         for (let i=0; i<ls_get('totalUsers'); i++) {        // full cycle complete, reset winners
+            while (!ls_get('name' + idx)) {
+                idx++;
+            }
             ls_set(i + 'win', 0);
+
+            idx++;
         }
     }
     else {
-        ls_set((winner+diff) + 'win', 1);      // mark winner
+        ls_set((winner) + 'win', 1);      // mark winner
     }
+}
+
+/**
+ * Redirects page to given url when called
+ * @param {String} url 
+ */
+function redirect (url) {
+    location.href = url;
+}
+
+/**
+ * Retrieves value from local storage corresponding to key
+ * @param {String} key 
+ * @returns value
+ */
+function ls_get (key) {
+    const currGroup = localStorage.getItem('groupId');
+    return localStorage.getItem(currGroup + '_' + key);
+}
+
+/**
+ * Sets key-value pair in local storage
+ * @param {String} key 
+ * @param {*} value 
+ */
+function ls_set (key, value) {
+    const currGroup = localStorage.getItem('groupId');
+    localStorage.setItem(currGroup + '_' + key, value);
+}
+
+/**
+ * Removes key-value pair in local storage
+ * @param {String} key 
+ */
+function ls_rem (key) {
+    const currGroup = localStorage.getItem('groupId');
+    localStorage.removeItem(currGroup + '_' + key);
 }
 
 function navbar () {
@@ -396,4 +411,30 @@ function customNavbar () {
     const tot = ls_get('totalUsers');
     const dayText = document.createTextNode('Day: ' + (day + 1) + '/' + tot);
     document.getElementById('dayNavbar').appendChild(dayText);
+}
+
+
+
+
+
+
+function summary () {
+    var tot = ls_get('allowedToPick');
+    var numUsers = ls_get('totalUsers');
+
+    for (let user=0; user<numUsers; user++) {
+        for (let pick=0; pick<tot; pick++) {
+            console.log(ls_get('rank' + user + pick));
+        }
+    }
+}
+
+function storeEndData () {
+    // names
+
+    // group size
+
+    // day number 
+
+    // winner data (title, icon url)
 }

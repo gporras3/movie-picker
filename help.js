@@ -20,7 +20,7 @@ function redirect (url) {
  * @returns value
  */
 function ls_get (key) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     return localStorage.getItem(currGroup + '_' + key);
 }
 
@@ -30,12 +30,16 @@ function ls_get (key) {
  * @param {*} value 
  */
 function ls_set (key, value) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     localStorage.setItem(currGroup + '_' + key, value);
 }
 
+/**
+ * Removes key-value pair in local storage
+ * @param {String} key 
+ */
 function ls_rem (key) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     localStorage.removeItem(currGroup + '_' + key);
 }
 
@@ -175,6 +179,8 @@ function printName () {
     var idx = ls_get('userIdx');
     // when user deleted, leaves gap in user indexes, this skips to next valid index
     while (ls_get(idx + 'win') == 1) {
+        console.log('hiii');
+        idx++;
         ls_set('userIdx', idx);
     }
 
@@ -218,6 +224,8 @@ function nextName () {
             redirect('winner.html');
             return;
         }
+        ptr = ls_get('userIdx');
+        ls_set('userIdx', --ptr);
         redirect('vote.html');
     } 
     // some members yet to select
@@ -306,7 +314,8 @@ function displaySearchHits() {
  * @param {ThisParameterType} el 
  */
 function setMovieData (el) {
-    const user = ls_get('moviesSelected');
+    // const user = ls_get('moviesSelected');
+    const user = ls_get('userIdx');
     const confirmButton = document.getElementById('confirm');
     
     // non-duplicate, user can select
