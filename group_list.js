@@ -159,27 +159,39 @@ function deleteGroup (id) {
 function openEditPopup () {
     document.getElementById('editPopup').classList.add('show');
 
+    ls_set('pendingTotal', ls_get('totalUsers'));
+
     var idx = 0;
     const oldTot = ls_get('totalUsers');
     for (let x=0; x<oldTot; x++) {
         // when name deleted, leaves gap in user indexes, this skips to next valid index
-        while (!ls_get('name' + idx)) {
-            idx++;
-        }
+        // while (!ls_get('name' + idx)) {
+        //     idx++;
+        // }
 
         // div to hold input box and trash icon
         const userDiv = document.createElement('div');
         userDiv.className = 'gen_box';
+        userDiv.style = 'border: 2px solid var(--navy-blue); border-radius: 3px; margin: 10px auto;'
         userDiv.id = 'name' + idx;
+
+            // shows user number
+            // const userNum = document.createElement('div');
+            // userNum.id = 'user' + (numUsersPrev + i);
+            // userNum.style = 'margin: 0; float: left; color: var(--navy-blue); font: small-caps bold 16px Calibri';
+            // userNum.appendChild(userNumText);
 
             // input box to change name if desired
             const newInput = document.createElement('input');
             newInput.type = 'text';
             newInput.id = 'input' + idx;
+            newInput.style = 'border: none;'
             newInput.value = ls_get('name' + idx);
             
             // trash icon to delete user (not done until confirmed)
             const trash = document.createElement('button');
+            trash.style.background = 'transparent';
+
             trashButtonAttr(trash, idx);
 
             const funct = '"removeName('+idx+');"';
@@ -245,6 +257,46 @@ function hideName (id) {
     }
 }
 
+function addUser () {
+    const idx = ls_get('pendingTotal');
+
+    const userDiv = document.createElement('div');
+    userDiv.className = 'gen_box';
+    userDiv.style = 'border: 2px solid var(--navy-blue); border-radius: 3px; margin: 10px auto;'
+    userDiv.id = 'name' + idx;
+
+        // shows user number
+        // const userNum = document.createElement('div');
+        // userNum.id = 'user' + (numUsersPrev + i);
+        // userNum.style = 'margin: 0; float: left; color: var(--navy-blue); font: small-caps bold 16px Calibri';
+        // userNum.appendChild(userNumText);
+
+        // input box to change name if desired
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.id = 'input' + idx;
+        newInput.style = 'border: none;'
+        
+        // trash icon to delete user (not done until confirmed)
+        const trash = document.createElement('button');
+        trash.style.background = 'transparent';
+
+        trashButtonAttr(trash, idx);
+
+        const funct = '"removeName('+idx+');"';
+        trash.setAttribute('onclick', 'hideName('+idx+'); addOnclickFunct('+funct+');');
+
+    userDiv.append(newInput);
+    userDiv.append(trash);
+
+    document.getElementById('nameList').appendChild(userDiv);
+
+    //     ls_set('name' + i, document.getElementById('name' + i).value);
+
+
+    ls_set('pendingTotal', parseInt(idx) + 1);
+}
+
 /**
  * Adds the given function to the edit button's onclick event 
  * function list. Namely, it adds removeName() to the list so 
@@ -271,17 +323,11 @@ function editGroup () {
         ls_set('groupName', newGroupName);
     }
 
-    var idx = 0;
-    const tot = ls_get('totalUsers');
-    for (let i=0; i<tot; i++) {
-        // when name deleted, leaves gap in user indexes, this skips to next valid index
-        while (!ls_get('name' + idx)) {
-            idx++;
-        }
 
-        // update name in ls
-        const newName = document.getElementById('input' + idx).value;
-        ls_set(('name' + idx), newName);
-        idx++;
+    const newTot = ls_get('pendingTotal');
+    for (let i=0; i<newTot; i++) {
+        ls_set('name' + i, document.getElementById('input' + i).value);
+        ls_set('day', 0);
+        ls_set('totalUsers', newTot);
     }
 }

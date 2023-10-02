@@ -336,8 +336,8 @@ function declareWinner () {
             while (!ls_get('name' + idx)) {
                 idx++;
             }
+            
             ls_set(i + 'win', 0);
-
             idx++;
         }
     }

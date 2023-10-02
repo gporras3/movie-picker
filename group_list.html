@@ -24,10 +24,11 @@
         <div id="editPopup" class="popup" onclick="closePopup();">
             <div class="mini-wrapper" onclick="event.stopPropagation();">
                 <div class="innerWrapper">
-                    <input type="text" id="nameEdit" placeholder="New Group Name">
+                    <input type="text" id="nameEdit" style="margin: 25px auto;" placeholder="New Group Name">
                     <div id="nameList"></div>
-                    <button id="editButton" type="button" class="user-button" style="margin-top: 15px;" onclick="editGroup(this); closePopup(); location.reload();">Confirm</button>
-                    <button type="button" style="position: absolute; top: 0; right: 0;" onclick="closePopup();"><i class="fa fa-remove"></i></button>
+                    <button id="editButton" type="button" class="user-button" style="margin: 15px auto;" onclick="editGroup(this); closePopup(); location.reload();">Confirm</button>
+                    <button type="button" onclick="addUser();">Add User</button>
+                    <button type="button" class="close" onclick="closePopup();"><i class="fa fa-remove"></i></button>
                 </div>
             </div>
             
