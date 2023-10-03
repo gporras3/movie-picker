@@ -20,7 +20,7 @@ function redirect (url) {
  * @returns value
  */
 function ls_get (key) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     return localStorage.getItem(currGroup + '_' + key);
 }
 
@@ -30,12 +30,16 @@ function ls_get (key) {
  * @param {*} value 
  */
 function ls_set (key, value) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     localStorage.setItem(currGroup + '_' + key, value);
 }
 
+/**
+ * Removes key-value pair in local storage
+ * @param {String} key 
+ */
 function ls_rem (key) {
-    var currGroup = localStorage.getItem('groupId');
+    const currGroup = localStorage.getItem('groupId');
     localStorage.removeItem(currGroup + '_' + key);
 }
 
@@ -104,6 +108,7 @@ function createNameBoxes () {
         
         newInput.id = 'name' + (numUsersPrev + i);
         newInput.style = 'height: 25px; margin-bottom: 5px; font-size: 18px;';
+        newInput.placeholder = 'Name';
 
         document.getElementById('nameBoxes').appendChild(userNum);
         document.getElementById('nameBoxes').appendChild(newInput);
@@ -175,6 +180,8 @@ function printName () {
     var idx = ls_get('userIdx');
     // when user deleted, leaves gap in user indexes, this skips to next valid index
     while (ls_get(idx + 'win') == 1) {
+        console.log('hiii');
+        idx++;
         ls_set('userIdx', idx);
     }
 
@@ -218,6 +225,8 @@ function nextName () {
             redirect('winner.html');
             return;
         }
+        ptr = ls_get('userIdx');
+        ls_set('userIdx', --ptr);
         redirect('vote.html');
     } 
     // some members yet to select
@@ -306,7 +315,8 @@ function displaySearchHits() {
  * @param {ThisParameterType} el 
  */
 function setMovieData (el) {
-    const user = ls_get('moviesSelected');
+    // const user = ls_get('moviesSelected');
+    const user = ls_get('userIdx');
     const confirmButton = document.getElementById('confirm');
     
     // non-duplicate, user can select
@@ -360,12 +370,17 @@ function removeOtherBorders () {
 function navbar () {
     const navbar = `
         <div class="navbar">
-            <span class="navtext">About</span>
-            <span class="navtext">Explore</span>
-            <span class="navtext">History</span>
-            <span class="navtext">Groups</span>
-            <span class="navtextRight" id="dayNavbar"></span>
-            <span class="navtextRight" id="groupNavbar"></span>
+            <div class="gen_box" style="height: inherit;">
+                <button type="button" class="fa fa-home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
+                <span class="navtext">About</span>
+                <span class="navtext">Explore</span>
+                <span class="navtext">History</span>
+                <span class="navtext">Groups</span>
+            </div>
+            <div class="gen_box">
+                <span id="groupNavbar" style="margin: 0px 20px;"></span>
+                <span id="dayNavbar" style="margin-right: 20px;"></span>
+            </div>
         </div>`;
 
     document.body.insertAdjacentHTML('afterbegin', navbar);

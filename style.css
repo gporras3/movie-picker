@@ -99,6 +99,12 @@
 
 }
 
+.user-button:focus {
+    outline-color: var(--navy-blue);
+    outline-style: solid;
+    outline-width: 2px;
+}
+
 .circle-button {
     height: 50px;
     width: 50px;
@@ -187,20 +193,23 @@ input {
 }
 
 .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     background-color: var(--navy-blue);
     color: var(--o-color);
     height: 50px;
     font-size: 20px;
+    padding-top: 0px;
 }
 
 .navbar .navtext {
-    padding: 15px 16px;
+    display: inline-block;
+    /* position:absolute; */
+    margin-top: 0px;
+    padding-left: 16px;
+    padding-right: 16px;
     line-height: 50px;
-}
-
-.navbar .navtextRight {
-    padding: 15px 16px;
-    float: right;
 }
 
 .navbar .navtext:hover {
@@ -234,8 +243,11 @@ input {
     align-items: center;
     justify-content: center;
     width: 34vw;
-    height: 34vh;
-    margin: 33vh 33vw;
+    min-height: 34vh;
+    /* margin: 33vh 33vw; */
+    margin-top: 33vh;
+    margin-left: 33vw;
+    margin-bottom: 16vh;
 }
 
 /* 1 vw = 17
@@ -272,4 +284,34 @@ input {
     border: none; 
     width: calc(100%); 
     height: calc(50%);
+}
+
+.close {
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    color: var(--trash-red);
+    background-color: transparent;
+    border: none; 
+    font-size: 25px;
+}
+
+.close:hover {
+    font-weight: bold;
+    color: var(--navy-blue);
+}
+
+.fa-home {
+    background-color: transparent;
+    width: 40px;
+    height: 50px;
+    color: var(--o-color);
+    border: none;
+    /* padding: 15px 16px; */
+    line-height: 50px;
+}
+
+.fa-home:hover {
+    color: var(--navy-blue);
+    background-color: var(--o-color);
 }
