@@ -27,7 +27,7 @@ function displayGroupList () {
 
                 const day = localStorage.getItem(idx + '_day');
                 const tot = localStorage.getItem(idx + '_totalUsers');
-                const dayText = newTextDiv('Day ' + (parseInt(day) + 1) + '/' + tot);
+                const dayText = newTextDiv('Day: ' + (parseInt(day) + 1) + '/' + tot);
                 dayText.firstChild.style = 'font-size: 35px;';
                 dayText.style = 'margin-left: 0px;';
 
@@ -161,6 +161,8 @@ function openEditPopup () {
 
     ls_set('pendingTotal', ls_get('totalUsers'));
 
+    document.getElementById('editPopup').style = 'backdrop-filter: blur(5px);'
+
     var idx = 0;
     const oldTot = ls_get('totalUsers');
     for (let x=0; x<oldTot; x++) {
@@ -169,40 +171,12 @@ function openEditPopup () {
         //     idx++;
         // }
 
-        // div to hold input box and trash icon
-        const userDiv = document.createElement('div');
-        userDiv.className = 'gen_box';
-        userDiv.style = 'border: 2px solid var(--navy-blue); border-radius: 3px; margin: 10px auto;'
-        userDiv.id = 'name' + idx;
-
-            // shows user number
-            // const userNum = document.createElement('div');
-            // userNum.id = 'user' + (numUsersPrev + i);
-            // userNum.style = 'margin: 0; float: left; color: var(--navy-blue); font: small-caps bold 16px Calibri';
-            // userNum.appendChild(userNumText);
-
-            // input box to change name if desired
-            const newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.id = 'input' + idx;
-            newInput.style = 'border: none;'
-            newInput.value = ls_get('name' + idx);
-            
-            // trash icon to delete user (not done until confirmed)
-            const trash = document.createElement('button');
-            trash.style.background = 'transparent';
-
-            trashButtonAttr(trash, idx);
-
-            const funct = '"removeName('+idx+');"';
-            trash.setAttribute('onclick', 'hideName('+idx+'); addOnclickFunct('+funct+');');
+        const userDiv = createUserDiv(x, idx, true);
+        
 
             if (oldTot == 1) {
-                trash.setAttribute('disabled', 'true');     // prevent deleting at 1 user (group min)
+                userDiv.children[1].children[1].setAttribute('disabled', 'true');     // prevent deleting at 1 user (group min)
             }
-
-        userDiv.append(newInput);
-        userDiv.append(trash);
 
         document.getElementById('nameList').appendChild(userDiv);
         idx++;
@@ -226,6 +200,63 @@ function closePopup () {
     document.getElementById('editButton').setAttribute('onclick', 'editGroup(this); closePopup(); location.reload();');
 }
 
+function createUserDiv (i, userIdx, existing) {
+
+    const numUsersPrev = ls_get('pendingTotal');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'innerWrapper';
+    wrapper.id = 'name' + userIdx;
+
+        // shows user number
+        const userNum = document.createElement('div');
+        const userNumText = document.createTextNode('User ' + (i + 1));
+        userNum.id = 'user' + userIdx;
+        userNum.style = 'margin-top: 10px; margin-right: auto; margin-left: 5px; color: var(--navy-blue); font: small-caps bold 16px Calibri';
+        userNum.appendChild(userNumText);
+
+        // div to hold input box and trash icon
+        const userDiv = document.createElement('div');
+        userDiv.className = 'gen_box';
+        userDiv.style = 'border: none; margin-top: 3px;';
+
+            // input box to change name if desired
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.id = 'input' + userIdx;
+            // newInput.style.width = '300px';
+            newInput.style = 'width: 300px; height: 25px; font-size: 18px;';
+
+            // newInput.style = 'border: none;'
+            if (existing) {
+                newInput.value = ls_get('name' + userIdx);
+            }
+            else {
+                newInput.placeholder = 'Name';
+            }
+            
+            // trash icon to delete user (not done until confirmed)
+            const trash = document.createElement('button');
+            // trash.style.background = 'transparent';
+            // trash.
+
+            trashButtonAttr(trash, userIdx);
+            trash.style.background = 'transparent';
+            trash.style.lineHeight = '25px';
+            trash.style.width = '44px';
+
+            // const funct = userIdx;
+            trash.setAttribute('onclick', 'hideName('+userIdx+'); addOnclickFunct('+userIdx+');');
+
+        userDiv.append(newInput);
+        userDiv.append(trash);
+
+    wrapper.appendChild(userNum);
+    wrapper.appendChild(userDiv);
+
+    return wrapper;
+}
+
 /**
  * Removes user from group by removing ls vars. In addition to 
  * removing name, resets day in cycle to 0 and adjusts total
@@ -235,8 +266,6 @@ function closePopup () {
 function removeName (id) {
     ls_rem('name' + id);
     ls_set('day', 0);
-    var tot = ls_get('totalUsers');
-    ls_set('totalUsers', --tot);
 }
 
 /**
@@ -248,53 +277,49 @@ function removeName (id) {
 function hideName (id) {
     document.getElementById('name' + id).className = 'hidden';
 
-    const namesHidden = document.querySelectorAll('.hidden').length;
-    const namesRemaining = ls_get('totalUsers') - namesHidden;
+    var numUsersPrev = ls_get('pendingTotal');
+    ls_set('pendingTotal', --numUsersPrev);
+
+    rewriteUserNums();
 
     // prevent deleting at 1 user (group min)
-    if (namesRemaining == 1) {
-        document.getElementById('nameList').querySelector('.gen_box').children[1].setAttribute('disabled', 'true');     // children[1] is trash icon
+    if (document.getElementById('nameList').querySelectorAll('.innerWrapper').length == 1) {
+        document.getElementById('nameList').querySelector('.innerWrapper').children[1].children[1].setAttribute('disabled', 'true');     // children[1] is trash icon
     }
 }
 
 function addUser () {
-    const idx = ls_get('pendingTotal');
+    const pend = parseInt(ls_get('pendingTotal'));
+    const idx = document.getElementById('nameList').childElementCount;
 
-    const userDiv = document.createElement('div');
-    userDiv.className = 'gen_box';
-    userDiv.style = 'border: 2px solid var(--navy-blue); border-radius: 3px; margin: 10px auto;'
-    userDiv.id = 'name' + idx;
+    if (document.getElementById('name' + idx)) {
+        document.getElementById('name' + idx).className = 'innerWrapper';
+        removeOnclickFunct(pend);
+    }
+    else {
+        const userDiv = createUserDiv(pend, idx, false);
+        document.getElementById('nameList').appendChild(userDiv);
+    }
 
-        // shows user number
-        // const userNum = document.createElement('div');
-        // userNum.id = 'user' + (numUsersPrev + i);
-        // userNum.style = 'margin: 0; float: left; color: var(--navy-blue); font: small-caps bold 16px Calibri';
-        // userNum.appendChild(userNumText);
+    document.getElementById('name0').children[1].children[1].removeAttribute('disabled');
 
-        // input box to change name if desired
-        const newInput = document.createElement('input');
-        newInput.type = 'text';
-        newInput.id = 'input' + idx;
-        newInput.style = 'border: none;'
-        
-        // trash icon to delete user (not done until confirmed)
-        const trash = document.createElement('button');
-        trash.style.background = 'transparent';
+    ls_set('pendingTotal', parseInt(pend) + 1);
+}
 
-        trashButtonAttr(trash, idx);
+function rewriteUserNums() {
+    const names = document.getElementById('nameList');
+    // const numBoxes = names.childElementCount;
+    const numVisible = ls_get('pendingTotal');
 
-        const funct = '"removeName('+idx+');"';
-        trash.setAttribute('onclick', 'hideName('+idx+'); addOnclickFunct('+funct+');');
+    var idx = 0;
+    for (let i=0; i<numVisible; i++) {
+        while (names.children[idx].className == 'hidden') {
+            idx++;
+        }
 
-    userDiv.append(newInput);
-    userDiv.append(trash);
-
-    document.getElementById('nameList').appendChild(userDiv);
-
-    //     ls_set('name' + i, document.getElementById('name' + i).value);
-
-
-    ls_set('pendingTotal', parseInt(idx) + 1);
+        document.getElementById('user' + idx).innerText = 'User ' + (i+1);
+        idx++;
+    }
 }
 
 /**
@@ -304,12 +329,31 @@ function addUser () {
  * the button click
  * @param {String} funct 
  */
-function addOnclickFunct(funct) {
+function setOnclickFunct() {
+    var tot = ls_get('pendingTotal');
+    var functList = '';
+    for (let i=0; i<tot; i++) {
+        if (ls_get('funct' + i)) {
+            functList = ls_get('funct' + i) + functList;
+        }
+    }
+
     const confButton = document.getElementById('editButton');
 
     var onclick = confButton.getAttribute('onclick');
-    onclick = funct + onclick;
+    onclick = functList + onclick;
     confButton.setAttribute('onclick', onclick);
+}
+
+function addOnclickFunct(idx) {
+    var funct = 'removeName('+idx+');';
+    ls_set('funct' + idx, funct);
+    setOnclickFunct();
+}
+
+function removeOnclickFunct(idx) {
+    ls_set('funct' + idx, '');
+    setOnclickFunct();
 }
 
 /**
@@ -323,11 +367,19 @@ function editGroup () {
         ls_set('groupName', newGroupName);
     }
 
+    for (let i=0; i<ls_get('totalUsers'); i++) {
+        ls_rem('name' + i);
+    }
 
     const newTot = ls_get('pendingTotal');
+    var idx = 0;
     for (let i=0; i<newTot; i++) {
-        ls_set('name' + i, document.getElementById('input' + i).value);
+        while (document.getElementById('name' + idx).className == 'hidden') {
+            idx++;
+        }
+        ls_set('name' + i, document.getElementById('input' + idx).value);
         ls_set('day', 0);
         ls_set('totalUsers', newTot);
+        idx++;
     }
 }

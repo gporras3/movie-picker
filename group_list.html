@@ -7,6 +7,7 @@
         <title>FlixPix - Choose Group</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="favicon.ico">
         <link rel="stylesheet" href="style.css" type="text/css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
@@ -14,7 +15,7 @@
     <body class="body" onload="navbar(); displayGroupList();">
 
         <!-- <div class="wrapper" style="display: none"> -->
-        <div class="wrapper">
+        <div id="wrapper" class="wrapper">
             <div class="gen_box" style="flex-direction: column; align-items: center;">
                 <div id="groups"></div>
                 <button type="button" class="user-button" style="margin-top: 15px;" onclick="redirect('home.html');">Go Back</button>
@@ -23,11 +24,14 @@
 
         <div id="editPopup" class="popup" onclick="closePopup();">
             <div class="mini-wrapper" onclick="event.stopPropagation();">
-                <div class="innerWrapper">
-                    <input type="text" id="nameEdit" style="margin: 25px auto;" placeholder="New Group Name">
+                <div class="innerWrapper" style="box-shadow: 0 4px 8px 0 rgba(11, 10, 48, 0.2), 0 6px 20px 0 rgba(11, 10, 48, 0.2);">
+                    <div class="innerWrapper" style="margin: 15px auto;">
+                        <span style="font-variant: small-caps; margin-bottom: 3px; color: #303030; font-weight: bold; font-size: 18px;">Name</span>
+                        <input type="text" id="nameEdit" placeholder="New Group Name">
+                    </div>
                     <div id="nameList"></div>
+                    <button type="button" class="circle-button" style="margin-top: 15px;" onclick="addUser();"><i class="fa fa-plus"></i></button>
                     <button id="editButton" type="button" class="user-button" style="margin: 15px auto;" onclick="editGroup(this); closePopup(); location.reload();">Confirm</button>
-                    <button type="button" onclick="addUser();">Add User</button>
                     <button type="button" class="close" onclick="closePopup();"><i class="fa fa-remove"></i></button>
                 </div>
             </div>

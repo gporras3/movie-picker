@@ -108,6 +108,7 @@ function createNameBoxes () {
         
         newInput.id = 'name' + (numUsersPrev + i);
         newInput.style = 'height: 25px; margin-bottom: 5px; font-size: 18px;';
+        newInput.placeholder = 'Name';
 
         document.getElementById('nameBoxes').appendChild(userNum);
         document.getElementById('nameBoxes').appendChild(newInput);
