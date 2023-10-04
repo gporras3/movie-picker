@@ -371,7 +371,7 @@ function navbar () {
     const navbar = `
         <div class="navbar">
             <div class="gen_box" style="height: inherit;">
-                <button type="button" class="fa fa-home home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
+                <button type="button" class="fa fa-home home" style="font-size: 30px;" onclick="redirect('index.html')"></button>
                 <span class="navtext">About</span>
                 <span class="navtext">Explore</span>
                 <span class="navtext">History</span>
