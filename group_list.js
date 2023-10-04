@@ -63,7 +63,8 @@ function displayGroupList () {
  */
 function groupButtonAttr (button, id) {
     button.setAttribute('type', 'button');
-    button.setAttribute('onclick', 'changeCurrId(this); changeDay(); redirect("name_and_movie.html");');
+    button.setAttribute('onclick', 'changeCurrId(this); redirect("name_and_movie.html");');
+    // button.setAttribute('onclick', 'changeCurrId(this); changeDay(); redirect("name_and_movie.html");');
     button.className = 'innerWrapper';
     button.style = 'background-color: var(--group-bg); color: var(--navy-blue); border: none; padding: 10px 10px; width: calc(90%);';
     button.id = id;
@@ -161,7 +162,7 @@ function openEditPopup () {
 
     ls_set('pendingTotal', ls_get('totalUsers'));
 
-    document.getElementById('editPopup').style = 'backdrop-filter: blur(5px);'
+    document.getElementById('editPopup').style = 'backdrop-filter: blur(5px);';
 
     var idx = 0;
     const oldTot = ls_get('totalUsers');
@@ -224,7 +225,6 @@ function createUserDiv (i, userIdx, existing) {
             const newInput = document.createElement('input');
             newInput.type = 'text';
             newInput.id = 'input' + userIdx;
-            // newInput.style.width = '300px';
             newInput.style = 'width: 300px; height: 25px; font-size: 18px;';
 
             // newInput.style = 'border: none;'
@@ -361,6 +361,25 @@ function removeOnclickFunct(idx) {
  * relevant local storage vars (i.e. names and/or group name)
  */
 function editGroup () {
+    const newTot = ls_get('pendingTotal');
+
+    if (newTot != ls_get('totalUsers')) {
+        ls_set('day', 0);
+
+        for (let i=0; i<ls_get('totalUsers'); i++) {
+            ls_rem(i + 'win');
+            ls_rem('title' + i);
+            ls_rem('movie' + i);
+        }
+
+        // ls_set('groupName', document.getElementById('groupName').value);
+        // ls_set('totalUsers', totalUsers);
+        // ls_set('allowedToPick', totalUsers);
+        // ls_set('moviesSelected', 0);            // how many users selected a movie
+        // ls_set('votesCasted', 0);               // how many users ranked the movies
+        // ls_set('userIdx', 0);
+    }
+
     // update group name in ls
     const newGroupName = document.getElementById('nameEdit').value;
     if (newGroupName != '') {
@@ -371,15 +390,17 @@ function editGroup () {
         ls_rem('name' + i);
     }
 
-    const newTot = ls_get('pendingTotal');
     var idx = 0;
     for (let i=0; i<newTot; i++) {
         while (document.getElementById('name' + idx).className == 'hidden') {
             idx++;
         }
         ls_set('name' + i, document.getElementById('input' + idx).value);
-        ls_set('day', 0);
+        // ls_set('day', 0);
         ls_set('totalUsers', newTot);
         idx++;
-    }
+    }   
+
+    changeDay();
+    ls_set('userIdx', 0);
 }

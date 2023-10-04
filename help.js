@@ -191,7 +191,7 @@ function printName () {
     document.getElementById('name').prepend(name);
 
     // change tab text
-    document.title = 'FlixPix - ' + currName + ': Select a Movie';
+    document.title = 'Pick-a-Flick - ' + currName + ': Select a Movie';
 }
 
 /**
@@ -340,7 +340,7 @@ function setMovieData (el) {
  */
 function setBorder (el) {
     removeOtherBorders();
-    el.style.border = '3px solid var(--f-color)';
+    el.style.border = '3px solid var(--magenta)';
 }
 
 /**
@@ -371,15 +371,15 @@ function navbar () {
     const navbar = `
         <div class="navbar">
             <div class="gen_box" style="height: inherit;">
-                <button type="button" class="fa fa-home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
+                <button type="button" class="fa fa-home home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
                 <span class="navtext">About</span>
                 <span class="navtext">Explore</span>
                 <span class="navtext">History</span>
                 <span class="navtext">Groups</span>
             </div>
             <div class="gen_box">
-                <span id="groupNavbar" style="margin: 0px 20px;"></span>
-                <span id="dayNavbar" style="margin-right: 20px;"></span>
+                <span id="groupNavbar" style="color: var(--white); margin: 0px 20px;"></span>
+                <span id="dayNavbar" style="color: var(--white); margin-right: 20px;"></span>
             </div>
         </div>`;
 
