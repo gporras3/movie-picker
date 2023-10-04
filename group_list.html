@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>FlixPix - Choose Group</title>
+        <title>Pick-a-Flick - Choose Group</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="favicon.ico">
@@ -30,12 +30,11 @@
                         <input type="text" id="nameEdit" placeholder="New Group Name">
                     </div>
                     <div id="nameList"></div>
-                    <button type="button" class="circle-button" style="margin-top: 15px;" onclick="addUser();"><i class="fa fa-plus"></i></button>
+                    <button type="button" class="circle-button" style="margin-top: 15px;" onclick="addUser();"><i class="fa fa-plus" style="color: var(--white);"></i></button>
                     <button id="editButton" type="button" class="user-button" style="margin: 15px auto;" onclick="editGroup(this); closePopup(); location.reload();">Confirm</button>
-                    <button type="button" class="close" onclick="closePopup();"><i class="fa fa-remove"></i></button>
+                    <button type="button" class="fa fa-remove close" style="font-size: 25px;" onclick="closePopup();"></button>
                 </div>
             </div>
-            
         </div>
 
         <script src="help.js"></script>

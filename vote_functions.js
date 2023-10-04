@@ -18,7 +18,7 @@ function newVoterName() {
         document.getElementById('name').appendChild(star);
     }
 
-    document.title = 'FlixPix - ' + name + ': Vote';
+    document.title = 'Pick-a-Flick - ' + name + ': Vote';
 }
 
 /**
@@ -63,7 +63,7 @@ function recordChoices() {
         ls_set(title, (parseInt(ls_get(title)) + idx));
 
         const rank = 'rank' + user + i;
-        ls_set(rank, title);
+        ls_set(rank, document.getElementById('pick' + i).getAttribute('src'));
         idx++;
     }
 }
@@ -86,6 +86,7 @@ function makeMovieFrames() {
 
         const box = document.createElement('div');
         box.className = 'innerWrapper';
+        box.style = 'justify-content: start;';
             // text that tells user what choice the box is
             const rankNum = document.createTextNode('Choice #' + (i + 1));
 
@@ -287,24 +288,29 @@ function declareWinner () {
     var winner;
 
     const tot = ls_get('allowedToPick');
-    var idx = 0;
-    for (let i=0; i<tot; i++) {
-        while(ls_get(idx + 'win') == 1) {
+
+    if (!ls_get('visited')) {
+        var idx = 0;
+        for (let i=0; i<tot; i++) {
+            while(ls_get(idx + 'win') == 1) {
+                idx++;
+            }
+
+            var currTitle = ls_get(('movie' + idx));
+
+            if (parseInt(ls_get(currTitle)) < high) {
+                winner = idx;
+                console.log('winner: '+winner);
+                high = parseInt(ls_get(currTitle));
+                console.log('new high '+high);
+            }
+
+            ls_set('winner', winner);
+
+            console.log(currTitle +' '+ ls_get(currTitle));
+            ls_rem(currTitle);
             idx++;
         }
-        // change this to while loop probably because gaps may exist
-
-        var currTitle = ls_get(('movie' + idx));
-
-        if (ls_get(currTitle) < high) {
-            winner = idx;
-            high = ls_get(currTitle);
-        }
-
-        console.log(currTitle + ': ' + ls_get(currTitle));
-        console.log(idx);
-        ls_rem(currTitle);
-        idx++;
     }
 
     // frame that holds image of winning movie
@@ -312,22 +318,27 @@ function declareWinner () {
     frame.className = 'frame';
 
         const img = document.createElement('img');
-        img.src = ls_get('image' + winner);
+        img.src = ls_get('image' + ls_get('winner'));
         img.style = 'width: 133px; height: 200px;'
 
     frame.appendChild(img);
 
     // text of winning movie title
-    const title = document.createTextNode(ls_get('movie' + winner));
+    const title = document.createTextNode(ls_get('movie' + ls_get('winner')));
 
     document.getElementById('winner').appendChild(frame);
     document.getElementById('winner').appendChild(title);
 
     // prepare group for next day in cycle 
     const day = ((parseInt(ls_get('day')) + 1)) % ls_get('totalUsers');
-    ls_set('day', day);
-    ls_set('moviesSelected', 0);
-    ls_set('votesCasted', 0);
+    if (!ls_get('visited')) {
+        ls_set('day', day);
+        ls_set('moviesSelected', 0);
+        ls_set('votesCasted', 0);  
+        ls_set('oldAllowed', ls_get('allowedToPick'));
+        ls_set('allowedToPick', parseInt(ls_get('totalUsers')) - parseInt(ls_get('day')));
+        ls_set('userIdx', 0);  
+    
 
     // handle winner flags
     if (day == 0) {
@@ -344,6 +355,17 @@ function declareWinner () {
     else {
         ls_set((winner) + 'win', 1);      // mark winner
     }
+
+    }
+
+    ls_set('visited', true);
+}
+
+function voteLoad () {
+    navbar(); 
+    customNavbar(); 
+    // if (!ls_get('visited')) {declareWinner()};
+    declareWinner();
 }
 
 /**
@@ -387,15 +409,15 @@ function navbar () {
     const navbar = `
         <div class="navbar">
             <div class="gen_box" style="height: inherit;">
-                <button type="button" class="fa fa-home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
+                <button type="button" class="fa fa-home home" style="font-size: 30px;" onclick="redirect('home.html')"></button>
                 <span class="navtext">About</span>
                 <span class="navtext">Explore</span>
                 <span class="navtext">History</span>
                 <span class="navtext">Groups</span>
             </div>
             <div class="gen_box">
-                <span id="groupNavbar" style="margin: 0px 20px;"></span>
-                <span id="dayNavbar" style="margin-right: 20px;"></span>
+                <span id="groupNavbar" style="color: var(--white); margin: 0px 20px;"></span>
+                <span id="dayNavbar" style="color: var(--white); margin-right: 20px;"></span>
             </div>
         </div>`;
 
@@ -424,14 +446,59 @@ function customNavbar () {
 
 
 function summary () {
-    var tot = ls_get('allowedToPick');
+    var tot = ls_get('oldAllowed');
     var numUsers = ls_get('totalUsers');
 
+    if (tot > 1) {
     for (let user=0; user<numUsers; user++) {
-        for (let pick=0; pick<tot; pick++) {
-            console.log(ls_get('rank' + user + pick));
-        }
+        const outerWrapper = document.createElement('div');
+        outerWrapper.className = 'innerWrapper';
+
+            const name = document.createElement('div');
+            name.style = 'color: var(--navy-blue); font: bold 25px Calibri';
+            const nameText = document.createTextNode(ls_get('name' + user));
+            name.appendChild(nameText);
+
+            const userSumBox = document.createElement('div');
+            userSumBox.className = 'gen_box';
+            userSumBox.style = 'flex-wrap: wrap; margin: 10px auto; justify-content: space-evenly;';
+
+            for (let pick=0; pick<tot; pick++) {
+                const frame = document.createElement('div');
+                frame.className = 'frame';
+                frame.style = 'margin: 5px 10px;'
+
+                const icon = document.createElement('img');
+                icon.style = 'width: 133px; height: 200px;'
+                icon.setAttribute('src', ls_get('rank' + user + pick)); 
+
+                frame.appendChild(icon);
+                userSumBox.appendChild(frame);
+            }
+
+        outerWrapper.appendChild(name);
+        outerWrapper.appendChild(userSumBox);
+
+        document.getElementById('users').appendChild(outerWrapper);
     }
+    }
+
+    else if (tot == 1) {
+        const text = document.createTextNode('Only one user remained in this cycle. There was no vote.');
+        document.getElementById('users').appendChild(text);
+    }
+}
+
+function openSummary () {
+    document.getElementById('summary').classList.add('show');
+    document.getElementById('summary').style = 'backdrop-filter: blur(5px);';
+
+    summary();
+}
+
+function closeSummary () {
+    document.getElementById('summary').classList.remove('show');      // hide popup
+    document.getElementById('users').innerHTML = '';
 }
 
 function storeEndData () {
