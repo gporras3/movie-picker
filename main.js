@@ -2,47 +2,6 @@ var numUsersPrev = 0;
 var totalUsers = 0;
 var totalGroups = -1;
 
-//////////////////////
-// HELPER FUNCTIONS //
-//////////////////////
-
-/**
- * Redirects page to given url when called
- * @param {String} url 
- */
-function redirect (url) {
-    location.href = url;
-}
-
-/**
- * Retrieves value from local storage corresponding to key
- * @param {String} key 
- * @returns value
- */
-function ls_get (key) {
-    const currGroup = localStorage.getItem('groupId');
-    return localStorage.getItem(currGroup + '_' + key);
-}
-
-/**
- * Sets key-value pair in local storage
- * @param {String} key 
- * @param {*} value 
- */
-function ls_set (key, value) {
-    const currGroup = localStorage.getItem('groupId');
-    localStorage.setItem(currGroup + '_' + key, value);
-}
-
-/**
- * Removes key-value pair in local storage
- * @param {String} key 
- */
-function ls_rem (key) {
-    const currGroup = localStorage.getItem('groupId');
-    localStorage.removeItem(currGroup + '_' + key);
-}
-
 //////////////////////////////
 // GROUP CREATION FUNCTIONS //
 //////////////////////////////
@@ -133,14 +92,15 @@ function createNameBoxes () {
  * groups also incremented. Day set to 0 (all group members may choose movie)
  */
 function newGroup () {
+    // at least one group exists already
     if (localStorage.getItem('totalGroups')) {
-        var prevTot = localStorage.getItem('totalGroups');
-        var newTot = parseInt(prevTot) + 1;
+        const prevTot = localStorage.getItem('totalGroups');
+        const newTot = parseInt(prevTot) + 1;
 
         localStorage.setItem('groupId', newTot);
         localStorage.setItem('totalGroups', newTot);
     }
-
+    // no group exists yet
     else {
         localStorage.setItem('groupId', 0);
         localStorage.setItem('totalGroups', 0);
@@ -160,11 +120,11 @@ function setGroup () {
     ls_set('allowedToPick', totalUsers);
     ls_set('moviesSelected', 0);            // how many users selected a movie
     ls_set('votesCasted', 0);               // how many users ranked the movies
-    ls_set('userIdx', 0);
+    ls_set('userIdx', 0);                   // current user's index
 
-    var tot = totalUsers;
+    const tot = totalUsers;
     for (let i=0; i<tot; i++) {
-        var key = 'name' + i;
+        const key = 'name' + i;
         ls_set(key, document.getElementById(key).value);
         ls_set(i + 'win', 0);
     }
@@ -172,67 +132,42 @@ function setGroup () {
     redirect('name_and_movie.html');
 }
 
+////////////////////////////////////
+// USER MOVIE SELECTION FUNCTIONS //
+////////////////////////////////////
+
 /**
  * Prints name of the next person to select their movie. Also
  * customizes tab name based on user selecting
  */
 function printName () {
+    // skip all winners (they can't pick)
     var idx = ls_get('userIdx');
-    // when user deleted, leaves gap in user indexes, this skips to next valid index
     while (ls_get(idx + 'win') == 1) {
-        console.log('hiii');
         idx++;
         ls_set('userIdx', idx);
     }
 
     // insert name div
-    const currName = ls_get('name' + idx);
-    const name = document.createTextNode(currName);
-    document.getElementById('name').prepend(name);
+    const name = ls_get('name' + idx);
+    const nameText = document.createTextNode(name);
+    document.getElementById('name').prepend(nameText);
 
     // change tab text
-    document.title = 'Pick-a-Flick - ' + currName + ': Select a Movie';
+    document.title = 'Pick-a-Flick - ' + name + ': Select a Movie';
 }
 
 /**
- * Additional user confirmed their movie choice, move to next user (or vote page)
+ * Allows user to hit 'Enter' to search for their movie instead
+ * of clicking the arrow button
  */
-var moviesSelected;
-// var ptr;
-function nextName () {
-    ls_set(ls_get('tempTally'), 0);                               // tally
-
-    // clears local storage of unselected movie data
-    for (let i=0; i<3; i++) {
-        ls_rem('url' + i);
-        ls_rem('title' + i);
-    }
-
-    // additional member selected, update in ls
-    moviesSelected = ls_get('moviesSelected');
-    ls_set('moviesSelected', ++moviesSelected);    
-    
-    ptr = ls_get('userIdx');
-    ls_set('userIdx', ++ptr);
-    // all movies selected, proceed to vote
-    var tot = ls_get('allowedToPick');
-    // if(tot == 1) {
-    //     console.log('hey')
-    //     redirect('winner.html');
-    // }
-    if (moviesSelected == tot) {
-        if (tot == 1) {
-            redirect('winner.html');
-            return;
+function allowEnterKey () {
+    const input = document.getElementById('movie');
+    input.addEventListener('keypress', function(event) {
+        if (event.key === "Enter") {
+            document.getElementById('confirm').click();
         }
-        ptr = ls_get('userIdx');
-        ls_set('userIdx', --ptr);
-        redirect('vote.html');
-    } 
-    // some members yet to select
-    else {
-        redirect('name_and_movie.html');
-    }
+    });
 }
 
 /**
@@ -240,7 +175,7 @@ function nextName () {
  * Retrieves html of search page and extracts title and image sources 
  * of top 3 hits
  */
-async function logMovieData() {
+async function searchImdb () {
     var searchQuery = document.getElementById('movie').value;
     searchQuery = searchQuery.replace(/\s+/g, '-');
 
@@ -260,6 +195,10 @@ async function logMovieData() {
             ls_set(('title' + i), imgs[i].getAttribute('alt'));    
         }
         else {
+            const inputBox = document.getElementById('movie');
+            inputBox.style.border = '3px solid #b11b1b';
+            inputBox.value = '';
+            inputBox.placeholder = 'Invalid Selection';
             return;
         }
     }
@@ -272,7 +211,7 @@ async function logMovieData() {
  * Clicking the box will change the movie data (title, image) 
  * associated with the current user
  */
-function displaySearchHits() {
+function displaySearchHits () {
     for (let i=0; i<3; i++) {
         const url = ls_get(('url' + i));
         const title = ls_get(('title' + i));
@@ -281,25 +220,25 @@ function displaySearchHits() {
         box.className = 'innerWrapper';
         box.style = 'justify-content: start; min-height: 250px;';
 
-        const titleElem = document.createElement('span');
-        const titleText = document.createTextNode(title);
+            const titleElem = document.createElement('span');
+            const titleText = document.createTextNode(title);
 
-        titleElem.style = 'width: 133px; text-align: center; margin-top: 10px;'
-        titleElem.appendChild(titleText);
+            titleElem.style = 'width: 133px; text-align: center; margin-top: 10px;'
+            titleElem.appendChild(titleText);
 
-        const frame = document.createElement('button');
-        frame.setAttribute('type', 'button');
-        frame.setAttribute('onclick', 'setBorder(this); setMovieData(this);');
-        frame.id = title;
-        frame.className = 'frame';
+            const frame = document.createElement('button');
+            frame.setAttribute('type', 'button');
+            frame.setAttribute('onclick', 'setBorder(this); setMovieData(this);');
+            frame.id = title;
+            frame.className = 'frame';
 
-        const icon = document.createElement('img');
-        icon.setAttribute('src', url);
-        icon.setAttribute('width', '133px');
-        icon.setAttribute('height', '200px');
-        icon.className = 'popout';
+                const icon = document.createElement('img');
+                icon.setAttribute('src', url);
+                icon.setAttribute('width', '133px');
+                icon.setAttribute('height', '200px');
+                icon.className = 'popout';
 
-        frame.appendChild(icon);
+            frame.appendChild(icon);
 
         box.appendChild(frame);
         box.appendChild(titleElem);
@@ -315,14 +254,13 @@ function displaySearchHits() {
  * @param {ThisParameterType} el 
  */
 function setMovieData (el) {
-    // const user = ls_get('moviesSelected');
     const user = ls_get('userIdx');
     const confirmButton = document.getElementById('confirm');
     
     // non-duplicate, user can select
     if (!ls_get(el.id)) {
-        ls_set(('movie' + user), el.id);               // title
-        ls_set(('image' + user), el.firstChild.src);   // image url
+        ls_set(('movie' + user), el.id);                // title
+        ls_set(('image' + user), el.firstChild.src);    // image url
         ls_set('tempTally', el.id);                     // tally
         confirmButton.removeAttribute('disabled');
         confirmButton.className = 'user-button';
@@ -355,14 +293,79 @@ function removeOtherBorders () {
     }
 }
 
+/**
+ * Additional user confirmed their movie choice, move to next user (or vote page)
+ */
+function nextName () {
+    ls_set(ls_get('tempTally'), 0);                               // tally
 
+    // clears local storage of unselected movie data
+    for (let i=0; i<3; i++) {
+        ls_rem('url' + i);
+        ls_rem('title' + i);
+    }
 
+    // additional member selected, update in ls
+    var moviesSelected = ls_get('moviesSelected');
+    ls_set('moviesSelected', ++moviesSelected);    
+    
+    var ptr = ls_get('userIdx');
+    ls_set('userIdx', ++ptr);
+    
+    const tot = ls_get('allowedToPick');
+    if (moviesSelected == tot) {
+        if (tot == 1) {
+            redirect('winner.html');    // when 1 user remains, they automatically win
+        }
+        else {
+            redirect('vote.html');
+        }
+    } 
+    else {
+        redirect('name_and_movie.html');    // some members yet to select
+    }
+}
 
+//////////////////////
+// HELPER FUNCTIONS //
+//////////////////////
 
+/**
+ * Redirects page to given url when called
+ * @param {String} url 
+ */
+function redirect (url) {
+    location.href = url;
+}
 
+/**
+ * Retrieves value from local storage corresponding to key
+ * @param {String} key 
+ * @returns value
+ */
+function ls_get (key) {
+    const currGroup = localStorage.getItem('groupId');
+    return localStorage.getItem(currGroup + '_' + key);
+}
 
+/**
+ * Sets key-value pair in local storage
+ * @param {String} key 
+ * @param {*} value 
+ */
+function ls_set (key, value) {
+    const currGroup = localStorage.getItem('groupId');
+    localStorage.setItem(currGroup + '_' + key, value);
+}
 
-
+/**
+ * Removes key-value pair in local storage
+ * @param {String} key 
+ */
+function ls_rem (key) {
+    const currGroup = localStorage.getItem('groupId');
+    localStorage.removeItem(currGroup + '_' + key);
+}
 
 /**
  * Creates the navigation bar on each page
@@ -402,63 +405,37 @@ function customNavbar () {
     document.getElementById('dayNavbar').appendChild(dayText);
 }
 
-function addInput () {
-    var input = document.getElementById('movie');
-    input.addEventListener('keypress', function(event) {
-        if (event.key === "Enter") {
-            document.getElementById('confirm').click();
-        }
-    });
+////////////////////////
+// PAGE LOAD WRAPPERS //
+////////////////////////
+
+/**
+ * Wrapper for index.html functions to be executed on page load
+ */
+function index_load () {
+    navbar();
 }
 
-
-
-
-
-function resetStorage () {
-    localStorage.clear();
+/**
+ * Wrapper for new_group.html functions to be executed on page load
+ */
+function new_group_load () {
+    navbar();
 }
 
-
-function mockGroup () {
-
-    localStorage.setItem('groupId',	0);
-    localStorage.setItem('totalGroups',	1	);
-    localStorage.setItem('0_day',	0	);
-
-    localStorage.setItem('0_groupName',	'kawhi');	
-    localStorage.setItem('0_totalUsers',	3	);
-    localStorage.setItem('0_allowedToPick',	3);	
-
-    localStorage.setItem('0_moviesSelected',	0	);
-    localStorage.setItem('0_votesCasted',	0	);
-    localStorage.setItem('0_ptr',	3	);
-
-    localStorage.setItem('0_name0',	'jake');	
-    localStorage.setItem('0_0win',	0	);
-    localStorage.setItem('0_name1',	'levi');	
-
-    localStorage.setItem('0_1win',	0	);
-    localStorage.setItem('0_name2',	'peace'	);
-    localStorage.setItem('0_2win',	0);
+/**
+ * Wrapper for name_and_movie.html functions to be executed on page load
+ */
+function name_and_movie_load () {
+    navbar();
+    customNavbar();
+    printName();
+    allowEnterKey();
 }
 
-function mockGroup2 () {
-    localStorage.setItem('1_day',	1	);
-    localStorage.setItem('1_groupName',	'kawhi');	
-    localStorage.setItem('1_totalUsers',	3	);
-    localStorage.setItem('1_allowedToPick',	3);	
-    localStorage.setItem('1_moviesSelected',	0	);
-    localStorage.setItem('1_votesCasted',	0	);
-    localStorage.setItem('1_ptr',	3	);
-    localStorage.setItem('1_name0',	'jake');	
-    localStorage.setItem('1_0win',	1	);
-    localStorage.setItem('1_name1',	'levi');	
-    localStorage.setItem('1_1win',	0	);
-    localStorage.setItem('1_name2',	'peace'	);
-    localStorage.setItem('1_2win',	0);
-}
-
+/**
+ * Wrapper for confirm_movie.html functions to be executed on page load
+ */
 function confirm_movie_load () {
     navbar(); 
     customNavbar(); 

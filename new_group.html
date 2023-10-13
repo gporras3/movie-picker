@@ -12,14 +12,13 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body" onload="navbar();">
+    <body class="body" onload="new_group_load();">
         <div class="wrapper">
             <div class="gen_box" style="height:150px; width:500px; justify-content: space-between; flex-direction: column;">
                 <div class="gen_box" style="height:50px; flex-direction: column; align-items: center; ">
                     <span style="font-variant: small-caps; color: #303030; font-weight: bold; font-size: 18px;">Name</span>
                     <input type="text" placeholder="Group Name" id="groupName">
                 </div>
-    
                 <div class="gen_box" style="margin: 0; flex-direction: column; align-items: center;">
                     <span style="font-variant: small-caps; color: #303030; font-weight: bold; font-size: 18px;">Size</span>
                     <div class="gen_box" style="width: 300px; justify-content: space-around;">
@@ -29,21 +28,15 @@
                     </div>
                 </div>
             </div>
-            
             <div class="gen_box" style="height:auto; width:500px; justify-content: space-between; flex-direction: column; margin-top: 20px; margin-bottom: 20px;">
                 <div class="gen_box" id="nameBoxes" style="flex-direction: column;"></div>
             </div>
-            
-            <!-- <div class="gen_box" style="width:500px; margin-top: 20px; margin-bottom: 20px;"> -->
-                <div class="gen_box" style="width:500px; margin: 20px auto">
-                    <button type="button" class="user-button" onclick="redirect('index.html');">Go Back</button>
-                    <button type="button" id="continue" class="user-button-gray" disabled="true" onclick="setGroup();">Continue</button>
+            <div class="gen_box" style="width:500px; margin: 20px auto">
+                <button type="button" class="user-button" onclick="redirect('index.html');">Go Back</button>
+                <button type="button" id="continue" class="user-button-gray" disabled="true" onclick="setGroup();">Continue</button>
             </div>
-
         </div>
         
-        <script src="help.js"></script>
+        <script src="main.js"></script>
     </body>
 </html>
-<!-- <a  href="https://icons8.com/icon/62888/plus-math">Plus Math</a> icon by <a href="https://icons8.com">Icons8</a> -->
-<!-- <a  href="https://icons8.com/icon/79029/subtract">Subtract</a> icon by <a href="https://icons8.com">Icons8</a> -->
