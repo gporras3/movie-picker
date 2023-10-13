@@ -12,19 +12,15 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
 
-    <body class="body" onload="navbar(); customNavbar(); printName(); displaySearchHits();">
-
+    <body class="body" onload="confirm_movie_load();">
         <div class="wrapper">
             <div class="gen_box" style="flex-direction: column; width: 600px; height: 500px; justify-content: space-between; align-items: center;">
                 <span id="name" style="color: var(--navy-blue); font: bold 75px Calibri"></span>
-
                 <div class="gen_box" style="justify-content: space-between; margin: 0; width:600px;" id="frames"></div>
-
                 <div class="gen_box" style="justify-content: space-around; margin: 0; width:500px;">
                     <button type="button" id="back" class="user-button" onclick="redirect('name_and_movie.html');">Back</button>
                     <button type="button" id="confirm" class="user-button-gray" disabled="true" onclick="nextName();">Confirm</button>    
                 </div>
-
             </div>
         </div>
         <script src="help.js"></script>

@@ -458,3 +458,10 @@ function mockGroup2 () {
     localStorage.setItem('1_name2',	'peace'	);
     localStorage.setItem('1_2win',	0);
 }
+
+function confirm_movie_load () {
+    navbar(); 
+    customNavbar(); 
+    printName(); 
+    displaySearchHits();
+}
