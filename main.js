@@ -97,13 +97,22 @@ function newGroup () {
         const prevTot = localStorage.getItem('totalGroups');
         const newTot = parseInt(prevTot) + 1;
 
-        localStorage.setItem('groupId', newTot);
+        // var idx = 0;
+        // while (localStorage.getItem(idx + '_groupName')) {
+        //     idx++;
+        // }
+        const newIdx = parseInt(localStorage.getItem('lastGroupIdx')) + 1;
+
+
+        localStorage.setItem('groupId', newIdx);
         localStorage.setItem('totalGroups', newTot);
+        localStorage.setItem('lastGroupIdx', newIdx);
     }
     // no group exists yet
     else {
         localStorage.setItem('groupId', 0);
         localStorage.setItem('totalGroups', 0);
+        localStorage.setItem('lastGroupIdx', 0);
     }
 
     ls_set('day', 0);
